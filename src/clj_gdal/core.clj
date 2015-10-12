@@ -9,7 +9,7 @@
 (defn open
   "Open a raster file as a Dataset object"
   [path]
-  (gdal/Open path gdalconst.GA_ReadOnly))
+  (gdal/Open path))
 
 (defn version-info
   "Get information about the current version of GDAL"

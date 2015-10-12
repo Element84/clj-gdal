@@ -251,26 +251,13 @@
 
 (defn read-raster-direct
   "Read a region of image data"
-  [band xoff yoff xsize ysize])
+  [band xoff yoff xsize ysize xbsize ybsize btype buffer]
+  (. band ReadRaster_Direct xoff yoff xsize ysize xbsize ybsize btype buffer)
+  buffer)
 
 (defn read-raster
   "Read a region of image data"
   [band xoff yoff xsize ysize]
-  nil)
-
-(defn write-block-direct
-  "Write a block of image data efficiently"
-  [band xoff yoff data]
-  nil)
-
-(defn write-raster-direct
-  "Write a region of image data for this band"
-  [band xoff yoff xsize ysize buffer-gdal-type buffer]
-  nil)
-
-(defn write-raster
-  "Write a region of image data for this band"
-  [band xoff yoff xsize ysize data]
   nil)
 
 (defn allocate-block-buffer
@@ -287,7 +274,7 @@
      buffer)))
 
 (defn raster-seq
-  "Read a block of data"
+  "Read entire raster in blocks"
   ([band] 
    (let [xsize  (get-x-size band)
          ysize  (get-y-size band)
@@ -298,7 +285,37 @@
   ([band xsize ysize xblock yblock byte-size]
    (let [buffer (allocate-block-buffer band)
          btype  nio/short-buffer ; need to solve this too
-         reader #(read-block-direct band %1 %2 buffer)]
+         reader #(read-raster-direct band %1 %2 xsize ysize xsize ysize 3 buffer)]
      (for [x (range 0 xsize xblock)
            y (range 0 ysize yblock)]
        (-> (reader x y) btype nio/buffer-to-array vec)))))
+
+(defn clear-buffer
+  "Set buffer values to zero" ; this could be a mistake.
+  [buffer]
+  (let [size (. buffer capacity)]
+    (map #(. buffer put % 0) (range size))))
+
+(defn raster-vec
+  "Read partial raster in one block"
+  [band x y xs ys buffer]
+  (clear-buffer buffer)
+  (-> (read-raster-direct band x y xs ys xs ys 3 buffer)
+      nio/short-buffer
+      nio/buffer-to-array
+      vec))
+
+(defn write-block-direct
+  "Write a block of image data efficiently"
+  [band xoff yoff data]
+  nil)
+
+(defn write-raster-direct
+  "Write a region of image data for this band"
+  [band xoff yoff xsize ysize buffer-gdal-type buffer]
+  nil)
+
+(defn write-raster
+  "Write a region of image data for this band"
+  [band xoff yoff xsize ysize data]
+  nil)
