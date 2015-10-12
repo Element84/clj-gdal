@@ -1,4 +1,7 @@
-(ns clj-gdal.band)
+(ns clj-gdal.band
+  (:require [nio.core :as nio])
+  (:import [java.nio ByteBuffer]
+           [org.gdal.gdalconst gdalconst]))
 
 
 (defn checksum
@@ -51,12 +54,12 @@
 (defn get-block-x-size
   "Fetch the natural block width of this band"
   [band]
-  nil)
+  (. band GetBlockXSize))
 
 (defn get-block-y-size
   "Fetch the natural block heigh of this band"
   [band]
-  nil)
+  (. band GetBlockYSize))
 
 (defn get-category-names
   "Fetch the list of category names for this raster"
@@ -96,7 +99,21 @@
 (defn get-data-type
   "Return the data type of the band"
   [band]
-  nil)
+  (. band getDataType))
+
+(def gdal_type->java_type {gdalconst/GDT_Byte   java.lang.Byte/SIZE
+                           gdalconst/GDT_UInt16 java.lang.Integer/SIZE
+                           gdalconst/GDT_Int16  java.lang.Short/SIZE
+                           gdalconst/GDT_UInt32 java.lang.Long/SIZE
+                           gdalconst/GDT_Int32  java.lang.Integer/SIZE
+                           })
+
+(defn get-data-type-size
+  "Number of bytes per pixel"
+  [band]
+  (let [gdal_type (get-data-type band)
+        java_type (gdal_type->java_type gdal_type)]
+    (/ java_type 8)))
 
 ; explain what this does -- comment repeats function name
 (defn get-default-histogram
@@ -206,15 +223,20 @@
   [band unit-type]
   nil)
 
+(defn get-byte-size
+  ""
+  [band]
+  2) ; yeah, still to do...
+
 (defn get-x-size
   "Fetch number of pixels along x axis"
   [band]
-  nil)
+  (. band GetXSize))
 
 (defn get-y-size
   "Fetch number of pixels along y axis"
   [band]
-  nil)
+  (. band GetYSize))
 
 (defn has-arbitrary-overviews
   "Check for arbitrary overviews"
@@ -223,8 +245,9 @@
 
 (defn read-block-direct
   "Read a block of image data efficiently"
-  [band xoff yoff]
-  nil)
+  [band xoff yoff buffer]
+  (. band ReadBlock_Direct xoff yoff buffer)
+  buffer)
 
 (defn read-raster-direct
   "Read a region of image data"
@@ -249,3 +272,33 @@
   "Write a region of image data for this band"
   [band xoff yoff xsize ysize data]
   nil)
+
+(defn allocate-block-buffer
+  "Create a buffer big enough to hold data in raster"
+  ([band]
+   (let [xsize (get-block-x-size band)
+         ysize (get-block-y-size band)
+         type-size (get-data-type-size band)]
+     (allocate-block-buffer band xsize ysize type-size)))
+  ([band xsize ysize type-size]
+   (let [buffer (ByteBuffer/allocateDirect (* xsize ysize type-size))]
+     ;; if the byte order is not set then values may not be correct
+     (. buffer order (java.nio.ByteOrder/nativeOrder))
+     buffer)))
+
+(defn raster-seq
+  "Read a block of data"
+  ([band] 
+   (let [xsize  (get-x-size band)
+         ysize  (get-y-size band)
+         bsize  (get-data-type-size band)
+         xblock (get-block-x-size band)
+         yblock (get-block-y-size band)]
+     (raster-seq band xsize ysize xblock yblock bsize)))
+  ([band xsize ysize xblock yblock byte-size]
+   (let [buffer (allocate-block-buffer band)
+         btype  nio/short-buffer ; need to solve this too
+         reader #(read-block-direct band %1 %2 buffer)]
+     (for [x (range 0 xsize xblock)
+           y (range 0 ysize yblock)]
+       (-> (reader x y) btype nio/buffer-to-array vec)))))
