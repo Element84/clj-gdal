@@ -101,19 +101,29 @@
   [band]
   (. band getDataType))
 
-(def gdal_type->java_type {gdalconst/GDT_Byte   java.lang.Byte/SIZE
-                           gdalconst/GDT_UInt16 java.lang.Integer/SIZE
-                           gdalconst/GDT_Int16  java.lang.Short/SIZE
-                           gdalconst/GDT_UInt32 java.lang.Long/SIZE
-                           gdalconst/GDT_Int32  java.lang.Integer/SIZE
-                           })
+(def gdal_type->java_type
+  {gdalconst/GDT_Byte    {:size java.lang.Byte/SIZE
+                          :buffer nio/byte-buffer }
+   gdalconst/GDT_Int16   {:size java.lang.Short/SIZE
+                          :buffer nio/short-buffer }
+   gdalconst/GDT_Int32   {:size java.lang.Integer/SIZE
+                          :buffer nio/int-buffer}
+   gdalconst/GDT_Float32 {:size java.lang.Float/SIZE
+                          :buffer nio/float-buffer}
+   gdalconst/GDT_Float64 {:size java.lang.Double/SIZE
+                          :buffer nio/double-buffer}})
 
 (defn get-data-type-size
   "Number of bytes per pixel"
   [band]
   (let [gdal_type (get-data-type band)
-        java_type (gdal_type->java_type gdal_type)]
-    (/ java_type 8)))
+        byte_size (get-in gdal_type->java_type [gdal_type :size])]
+    (/ byte_size 8)))
+
+; unsigned integers are too big for the signed java types...
+; but they require special handling to make fit.
+; gdalconst/GDT_UInt16  nio/int-buffer ; wrong
+; gdalconst/GDT_UInt32  nio/long-buffer ; wrong
 
 ; explain what this does -- comment repeats function name
 (defn get-default-histogram
@@ -263,32 +273,33 @@
 (defn allocate-block-buffer
   "Create a buffer big enough to hold data in raster"
   ([band]
-   (let [xsize (get-block-x-size band)
-         ysize (get-block-y-size band)
-         type-size (get-data-type-size band)]
-     (allocate-block-buffer band xsize ysize type-size)))
-  ([band xsize ysize type-size]
-   (let [buffer (ByteBuffer/allocateDirect (* xsize ysize type-size))]
-     ;; if the byte order is not set then values may not be correct
+   (let [xsize (get-block-x-size band) ; xblock
+         ysize (get-block-y-size band) ; yblock
+         byte-count (get-data-type-size band)]
+     (allocate-block-buffer band xsize ysize byte-count)))
+  ([band xsize ysize byte-count] ;; xblock/yblock
+   (let [buffer (ByteBuffer/allocateDirect (* xsize ysize byte-count))]
      (. buffer order (java.nio.ByteOrder/nativeOrder))
      buffer)))
 
 (defn raster-seq
   "Read entire raster in blocks"
+  ;; given only a band, use the raster block size and raster data type
+  ;; as parameters.
   ([band] 
    (let [xsize  (get-x-size band)
          ysize  (get-y-size band)
-         bsize  (get-data-type-size band)
          xblock (get-block-x-size band)
          yblock (get-block-y-size band)]
-     (raster-seq band xsize ysize xblock yblock bsize)))
-  ([band xsize ysize xblock yblock byte-size]
-   (let [buffer (allocate-block-buffer band)
-         btype  nio/short-buffer ; need to solve this too
-         reader #(read-raster-direct band %1 %2 xsize ysize xsize ysize 3 buffer)]
+     (raster-seq band xsize ysize xblock yblock)))
+  ;; this function provides full control over the block size
+  ([band xsize ysize xblock yblock]
+   (let [gdal_type gdalconst/GDT_Int16
+         buffer (allocate-block-buffer band xblock yblock 2) ; must agree on size
+         reader #(read-raster-direct band %1 %2 xblock yblock xblock yblock gdal_type buffer)]
      (for [x (range 0 xsize xblock)
            y (range 0 ysize yblock)]
-       (-> (reader x y) btype nio/buffer-to-array vec)))))
+       (-> (reader x y) nio/short-buffer nio/buffer-to-array vec)))))
 
 (defn clear-buffer
   "Set buffer values to zero" ; this could be a mistake.
@@ -300,7 +311,7 @@
   "Read partial raster in one block"
   [band x y xs ys buffer]
   (clear-buffer buffer)
-  (-> (read-raster-direct band x y xs ys xs ys 3 buffer)
+  (-> (read-raster-direct band x y xs ys xs ys gdalconst/GDT_Int16 buffer)
       nio/short-buffer
       nio/buffer-to-array
       vec))
