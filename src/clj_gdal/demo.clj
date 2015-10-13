@@ -9,11 +9,13 @@
 (def tiff   (gdal/open path))
 (def band-1 (dataset/get-raster-band tiff 1))
 
-(def buffer-a (band/allocate-block-buffer band-1 10 10 2))
-(def block-a  (band/raster-vec band-1 4900 4900 10 10 buffer-a java.lang.Short))
-(def blocks-a (band/raster-seq band-1 java.lang.Short))
+;; these use the best Java type for the underlying raster's GDAL type
+(def buffer-a (band/allocate-block-buffer band-1 10 10))
+(def block-a  (band/raster-vec band-1 4900 4900 10 10 buffer-a))
+(def blocks-a (band/raster-seq band-1))
 
-(def buffer-b (band/allocate-block-buffer band-1 10 10 4))
+;; these use whatever java type 
+(def buffer-b (band/allocate-block-buffer band-1 10 10 java.lang.Integer))
 (def block-b  (band/raster-vec band-1 4900 4900 10 10 buffer-b java.lang.Integer))
 (def blocks-b (band/raster-seq band-1 java.lang.Integer))
 

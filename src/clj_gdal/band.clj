@@ -101,18 +101,6 @@
   [band]
   (. band getDataType))
 
-(def gdal_type->java_type
-  {gdalconst/GDT_Byte    {:size java.lang.Byte/SIZE
-                          :buffer nio/byte-buffer }
-   gdalconst/GDT_Int16   {:size java.lang.Short/SIZE
-                          :buffer nio/short-buffer }
-   gdalconst/GDT_Int32   {:size java.lang.Integer/SIZE
-                          :buffer nio/int-buffer}
-   gdalconst/GDT_Float32 {:size java.lang.Float/SIZE
-                          :buffer nio/float-buffer}
-   gdalconst/GDT_Float64 {:size java.lang.Double/SIZE
-                          :buffer nio/double-buffer}})
-
 (def java_type->gdal_type
   {java.lang.Byte     gdalconst/GDT_Byte
    java.lang.Short    gdalconst/GDT_Int16
@@ -122,6 +110,18 @@
 (defn get-gdal-type
   "Get the GDAL type needed to convert rasters to a Java type"
   [java-type] (java_type->gdal_type java-type))
+
+(def gdal_type->java_type
+  {gdalconst/GDT_Byte     java.lang.Byte
+   gdalconst/GDT_Int16    java.lang.Short    
+   gdalconst/GDT_Int32    java.lang.Integer  
+   gdalconst/GDT_Float32  java.lang.Float})
+
+(defn get-java-type
+  "Get the best Java type for the given GDAL band"
+  [band]
+  (let [gdal-type (get-data-type band)]
+    (gdal_type->java_type gdal-type)))
 
 (def java_type->buffer_type
   {java.lang.Byte     nio/byte-buffer
@@ -295,7 +295,11 @@
   ([band]
    (let [xblock (get-block-x-size band)
          yblock(get-block-y-size band)
-         byte-count (get-data-type-size band)]
+         java-type  (get-java-type band)
+         byte-count (get-byte-count java-type)]
+     (allocate-block-buffer band xblock yblock byte-count)))
+  ([band xblock yblock]
+   (let [byte-count (-> band get-java-type get-byte-count)]
      (allocate-block-buffer band xblock yblock byte-count)))
   ([band xblock yblock byte-count] ;; xblock/yblock
    (let [buffer (ByteBuffer/allocateDirect (* xblock yblock byte-count))]
@@ -304,8 +308,9 @@
 
 (defn raster-seq
   "Read entire raster in blocks"
-  ;; given only a band, use the raster block size and raster data type
-  ;; as parameters.
+  ([band]
+   (let [java-type (get-java-type band)]
+     (raster-seq band java-type)))
   ([band java-type]
    (let [xsize  (get-x-size band)
          ysize  (get-y-size band)
@@ -331,14 +336,17 @@
 
 (defn raster-vec
   "Read partial raster into single block"
-  [band x y xblock yblock buffer java-type]
-  (clear-buffer buffer)
-  (let [gdal-type (get-gdal-type java-type)
-        buffer-type (get-buffer-type java-type)]
-      (-> (read-raster-direct band x y xblock yblock xblock yblock gdal-type buffer)
-          buffer-type
-          nio/buffer-to-array
-          vec)))
+  ([band x y xblock yblock buffer]
+   (let [java-type (get-java-type band)]
+     (raster-vec band x y xblock yblock buffer java-type)))
+  ([band x y xblock yblock buffer java-type]
+   (clear-buffer buffer)
+   (let [gdal-type (get-gdal-type java-type)
+         buffer-type (get-buffer-type java-type)]
+       (-> (read-raster-direct band x y xblock yblock xblock yblock gdal-type buffer)
+           buffer-type
+           nio/buffer-to-array
+           vec))))
 
 (defn write-block-direct
   "Write a block of image data efficiently"
