@@ -43,5 +43,6 @@
         (let [blocks (raster-seq band :xstep 1000 :ystep 500)]
           (is (= 50 (count blocks))))))
     (testing "Raster vector (getting one block as a vector)"
-      (testing "implicit call")
-      (testing "explicit call"))))
+      (testing "explicit call for small area"
+        (let [block (raster-vec band :xstart 10 :xstop 20 :ystart 10 :ystop 20)]
+          (is (= 100 (count block))))))))

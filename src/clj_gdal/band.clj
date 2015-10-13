@@ -334,17 +334,23 @@
 
 (defn raster-vec
   "Read partial raster into single block"
-  ([band x y xblock yblock buffer]
-   (let [java-type (get-java-type band)]
-     (raster-vec band x y xblock yblock buffer java-type)))
-  ([band x y xblock yblock buffer java-type]
-   (clear-buffer buffer)
+  [band & {:keys [xstart xstop ystart ystop xblock yblock java-type byte-count buffer]
+            :or   {xstart 0
+                   ystart 0
+                   xstop (get-x-size band)
+                   ystop (get-y-size band)
+                   xblock (- xstop xstart)
+                   yblock (- ystop ystart)
+                   java-type (get-java-type band)
+                   byte-count (get-byte-count java-type)
+                   buffer (allocate-block-buffer band xblock yblock byte-count)
+            :as args}}]
    (let [gdal-type (get-gdal-type java-type)
          buffer-type (get-buffer-type java-type)]
-       (-> (read-raster-direct band x y xblock yblock xblock yblock gdal-type buffer)
+     (-> (read-raster-direct band xstart ystart xblock yblock xblock yblock gdal-type buffer)
            buffer-type
            nio/buffer-to-array
-           vec))))
+           vec)))
 
 (defn write-block-direct
   "Write a block of image data efficiently"
