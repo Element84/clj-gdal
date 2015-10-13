@@ -5,25 +5,15 @@
             [nio.core :as nio]))
 
 (gdal/init)
-(def path "test/data/LC80470272013111-SC20150612185259/LC80470272013111LGN01_sr_band4.tif")
-(def tiff (gdal/open path))
-(def b1 (dataset/get-raster-band tiff 1))
-(def bu (band/allocate-block-buffer b1))
-(band/read-block-direct b1 0 0 bu)
-(def a1 (nio/buffer-to-array bu))
-;(def data (/get-raster-data band 4990 4990 10 10))
+(def path   "test/data/LC80470272013111-SC20150612185259/LC80470272013111LGN01_sr_band4.tif")
+(def tiff   (gdal/open path))
+(def band-1 (dataset/get-raster-band tiff 1))
 
-(map #(. data getShort %) (range 1 100 2))
+(def buffer-a (band/allocate-block-buffer band-1 10 10 2))
+(def block-a  (band/raster-vec band-1 4900 4900 10 10 buffer-a java.lang.Short))
+(def blocks-a (band/raster-seq band-1 java.lang.Short))
 
-(gdal/get-projection tiff)
+(def buffer-b (band/allocate-block-buffer band-1 10 10 4))
+(def block-b  (band/raster-vec band-1 4900 4900 10 10 buffer-b java.lang.Integer))
+(def blocks-b (band/raster-seq band-1 java.lang.Integer))
 
-(gdal/get-geo-transform tiff)
-
-;; out of place
-
-(defn get-raster-data
-  "Retrieve data from a band in a byte buffer"
-  [band x y x_size y_size]
-  (let [gdal_type (. band GetRasterDataType)
-        buffer    (. band ReadRaster_Direct x y x_size y_size gdal_type)]
-    buffer))

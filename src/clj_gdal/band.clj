@@ -113,6 +113,26 @@
    gdalconst/GDT_Float64 {:size java.lang.Double/SIZE
                           :buffer nio/double-buffer}})
 
+(def java_type->gdal_type
+  {java.lang.Byte     gdalconst/GDT_Byte
+   java.lang.Short    gdalconst/GDT_Int16
+   java.lang.Integer  gdalconst/GDT_Int32
+   java.lang.Float    gdalconst/GDT_Float32})
+
+(defn get-gdal-type
+  "Get the GDAL type needed to convert rasters to a Java type"
+  [java-type] (java_type->gdal_type java-type))
+
+(def java_type->buffer_type
+  {java.lang.Byte     nio/byte-buffer
+   java.lang.Short    nio/short-buffer
+   java.lang.Integer  nio/int-buffer
+   java.lang.Float    nio/float-buffer})
+
+(defn get-buffer-type
+  "Get the nio buffer converter for the Java type"
+  [java-type] (java_type->buffer_type java-type))
+
 (defn get-data-type-size
   "Number of bytes per pixel"
   [band]
@@ -233,10 +253,10 @@
   [band unit-type]
   nil)
 
-(defn get-byte-size
+(defn get-byte-count
   ""
-  [band]
-  2) ; yeah, still to do...
+  [java-type]
+  (/ (eval `(. ~java-type SIZE)) 8))
 
 (defn get-x-size
   "Fetch number of pixels along x axis"
@@ -273,12 +293,12 @@
 (defn allocate-block-buffer
   "Create a buffer big enough to hold data in raster"
   ([band]
-   (let [xsize (get-block-x-size band) ; xblock
-         ysize (get-block-y-size band) ; yblock
+   (let [xblock (get-block-x-size band)
+         yblock(get-block-y-size band)
          byte-count (get-data-type-size band)]
-     (allocate-block-buffer band xsize ysize byte-count)))
-  ([band xsize ysize byte-count] ;; xblock/yblock
-   (let [buffer (ByteBuffer/allocateDirect (* xsize ysize byte-count))]
+     (allocate-block-buffer band xblock yblock byte-count)))
+  ([band xblock yblock byte-count] ;; xblock/yblock
+   (let [buffer (ByteBuffer/allocateDirect (* xblock yblock byte-count))]
      (. buffer order (java.nio.ByteOrder/nativeOrder))
      buffer)))
 
@@ -286,35 +306,39 @@
   "Read entire raster in blocks"
   ;; given only a band, use the raster block size and raster data type
   ;; as parameters.
-  ([band] 
+  ([band java-type]
    (let [xsize  (get-x-size band)
          ysize  (get-y-size band)
          xblock (get-block-x-size band)
          yblock (get-block-y-size band)]
-     (raster-seq band xsize ysize xblock yblock)))
+     (raster-seq band xsize ysize xblock yblock java-type)))
   ;; this function provides full control over the block size
-  ([band xsize ysize xblock yblock]
-   (let [gdal_type gdalconst/GDT_Int16
-         buffer (allocate-block-buffer band xblock yblock 2) ; must agree on size
-         reader #(read-raster-direct band %1 %2 xblock yblock xblock yblock gdal_type buffer)]
+  ([band xsize ysize xblock yblock java-type]
+   (let [gdal-type (get-gdal-type java-type)
+         buffer-type (get-buffer-type java-type)
+         byte-count (get-byte-count java-type)
+         buffer (allocate-block-buffer band xblock yblock byte-count)
+         reader #(read-raster-direct band %1 %2 xblock yblock xblock yblock gdal-type buffer)]
      (for [x (range 0 xsize xblock)
            y (range 0 ysize yblock)]
-       (-> (reader x y) nio/short-buffer nio/buffer-to-array vec)))))
+       (-> (reader x y) buffer-type nio/buffer-to-array vec)))))
 
 (defn clear-buffer
-  "Set buffer values to zero" ; this could be a mistake.
+  "Set buffer values to zero" ; this could be a mistake... zero isn't always fill!
   [buffer]
   (let [size (. buffer capacity)]
     (map #(. buffer put % 0) (range size))))
 
 (defn raster-vec
-  "Read partial raster in one block"
-  [band x y xs ys buffer]
+  "Read partial raster into single block"
+  [band x y xblock yblock buffer java-type]
   (clear-buffer buffer)
-  (-> (read-raster-direct band x y xs ys xs ys gdalconst/GDT_Int16 buffer)
-      nio/short-buffer
-      nio/buffer-to-array
-      vec))
+  (let [gdal-type (get-gdal-type java-type)
+        buffer-type (get-buffer-type java-type)]
+      (-> (read-raster-direct band x y xblock yblock xblock yblock gdal-type buffer)
+          buffer-type
+          nio/buffer-to-array
+          vec)))
 
 (defn write-block-direct
   "Write a block of image data efficiently"
