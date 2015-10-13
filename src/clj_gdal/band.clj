@@ -97,7 +97,7 @@
   nil)
 
 (defn get-data-type
-  "Return the data type of the band"
+  "Return GDAL data type of the band"
   [band]
   (. band getDataType))
 
@@ -254,7 +254,7 @@
   nil)
 
 (defn get-byte-count
-  ""
+  "Count the number of bytes used by java-type"
   [java-type]
   (/ (eval `(. ~java-type SIZE)) 8))
 
