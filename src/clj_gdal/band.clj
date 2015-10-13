@@ -308,24 +308,22 @@
 
 (defn raster-seq
   "Read entire raster in blocks"
-  ([band]
-   (let [java-type (get-java-type band)]
-     (raster-seq band java-type)))
-  ([band java-type]
-   (let [xsize  (get-x-size band)
-         ysize  (get-y-size band)
-         xblock (get-block-x-size band)
-         yblock (get-block-y-size band)]
-     (raster-seq band xsize ysize xblock yblock java-type)))
-  ;; this function provides full control over the block size
-  ([band xsize ysize xblock yblock java-type]
-   (let [gdal-type (get-gdal-type java-type)
+  ([band & {:keys [xstart ystart xstop ystop xstep ystep java-type]
+            :or   {xstart    0
+                   ystart    0
+                   xstop     (get-x-size band)
+                   ystop     (get-y-size band)
+                   xstep     (get-block-x-size band)
+                   ystep     (get-block-y-size band)
+                   java-type (get-java-type band)
+            :as args}}]
+   (let [gdal-type   (get-gdal-type java-type)
          buffer-type (get-buffer-type java-type)
-         byte-count (get-byte-count java-type)
-         buffer (allocate-block-buffer band xblock yblock byte-count)
-         reader #(read-raster-direct band %1 %2 xblock yblock xblock yblock gdal-type buffer)]
-     (for [x (range 0 xsize xblock)
-           y (range 0 ysize yblock)]
+         byte-count  (get-byte-count java-type)
+         buffer      (allocate-block-buffer band xstep ystep byte-count)
+         reader      #(read-raster-direct band %1 %2 xstep ystep xstep ystep gdal-type buffer)]
+     (for [x (range xstart xstop xstep)
+           y (range xstart ystop ystep)]
        (-> (reader x y) buffer-type nio/buffer-to-array vec)))))
 
 (defn clear-buffer

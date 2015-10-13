@@ -33,12 +33,15 @@
         ;; should be exactly 5000 blocks.
         (let [blocks (raster-seq band)]
           (is (= 5000 (count blocks)))))
+      (testing "band with block size call"
+        (let [blocks (raster-seq band :xstep 1000 :ystep 1000)]
+          (is (= 25 (count blocks)))))
       (testing "explicit call"
         ;; The same 5000x5000 image is parsed in blocks of 1000x1000
-        ;; so there should be five blocks along the x-axis and five
-        ;; blocks along the y-axis, yielding exactly 25 blocks.
-        (let [blocks (raster-seq band 5000 5000 1000 1000 java.lang.Short)]
-          (is (= 25 (count blocks))))))
+        ;; so there should be five blocks along the x-axis and ten
+        ;; blocks along the y-axis, yielding exactly 50 blocks.
+        (let [blocks (raster-seq band :xstep 1000 :ystep 500)]
+          (is (= 50 (count blocks))))))
     (testing "Raster vector (getting one block as a vector)"
       (testing "implicit call")
       (testing "explicit call"))))
