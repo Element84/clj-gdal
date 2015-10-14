@@ -44,7 +44,7 @@
 (defn get-band
   "Fetch the band number"
   [band]
-  nil)
+  (. band GetBand))
 
 (defn get-block-size
   "Fetch the natural block size of this band"
