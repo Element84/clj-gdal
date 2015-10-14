@@ -31,6 +31,8 @@
         (is (= 1000 (get-block-x-size band))))
       (testing "y block size"
         (is (=    4 (get-block-y-size band))))
+      (testing "get x and y block size"
+        (is (= [1000 4] (get-block-size band))))
       ;; The GDAL type corresponds to a Java type and some related
       ;; kind of NIO buffer function.
       (testing "GDAL data type"
