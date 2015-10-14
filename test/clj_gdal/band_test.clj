@@ -58,7 +58,13 @@
       (testing "Get mask flags (0x08 / GMF_NODATA)"
         (is (= 8 (get-mask-flags band))))
       (testing "Get dataset"
-        (not (= nil (get-dataset band)))))
+        (not (= nil (get-dataset band))))
+      (testing "Get no-data value"
+        (is (= -9999 (get-no-data-value band))))
+      (testing "Get minimum (which geotiffs don't know)"
+        (is (= nil (get-minimum band))))
+      (testing "Get maximum (which geotiffs don't know)"
+        (is (= nil (get-maximum band)))))
     (testing "Raster sequence (seq-ing many blocks as vectors)"
       (testing "implicit call"
         ;; The test image is 1000x1000 pixels. The natural block

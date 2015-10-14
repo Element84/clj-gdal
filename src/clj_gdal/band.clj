@@ -188,17 +188,29 @@
 (defn get-maximum
   "Fetch maximum value for band"
   [band]
-  nil)
+  (let [result (make-array java.lang.Double 1)
+        become short
+        safely #(cond % (become %))]
+    (. band GetMaximum result)
+    (-> result first safely)))
 
 (defn get-minimum
   "Fetch minimum value for band"
   [band]
-  nil)
+  (let [result (make-array java.lang.Double 1)
+        become short
+        safely #(cond % (become %))]
+    (. band GetMinimum result)
+    (-> result first safely)))
 
 (defn get-no-data-value
   "Fetch the no data value for this band"
   [band]
-  nil)
+  (let [result (make-array java.lang.Double 1)
+        become short
+        safely #(cond % (become %))]
+    (. band GetNoDataValue result)
+    (-> result first safely)))
 
 (defn set-no-data-value
   "Set the no data value for this band"
