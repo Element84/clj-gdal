@@ -38,7 +38,9 @@
       (testing "Java data type"
         (is (= java.lang.Short (get-java-type band))))
       (testing "Java NIO buffer type"
-        (is (= nio/short-buffer))))
+        (is (= nio/short-buffer)))
+      (testing "Get band number"
+        (is (= 1 (get-band band)))))
     (testing "Raster sequence (seq-ing many blocks as vectors)"
       (testing "implicit call"
         ;; The test image is 1000x1000 pixels. The natural block
