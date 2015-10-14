@@ -1,0 +1,3 @@
+[submodule "clj-gdal-test-data"]
+	path = test/data
+	url = git@github.com:jmorton/clj-gdal-test-data.git
