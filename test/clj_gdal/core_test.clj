@@ -22,7 +22,7 @@
 (deftest test-open
   (testing "Opening a geotiff"
     (let [_    (init) ; fixture?
-          path "test/data/scene/LT50460262009013PAC01_sr_band4.tif"
+          path "test/data/espa/landsat_8_sr_band_4_san_francisco.tif"
           tiff (open path)]
       (not (= tiff nil)))))
 
