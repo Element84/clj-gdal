@@ -46,11 +46,6 @@
   [band]
   (. band GetBand))
 
-(defn get-block-size
-  "Fetch the natural block size of this band"
-  [band]
-  nil)
-
 (defn get-block-x-size
   "Fetch the natural block width of this band"
   [band]
@@ -60,6 +55,14 @@
   "Fetch the natural block heigh of this band"
   [band]
   (. band GetBlockYSize))
+
+(defn get-block-size
+  "Fetch the natural block size of this band"
+  [band]
+  ;; this side-steps working with the actual GDAL function
+  ;; because creating and reading array buffer arguments is
+  ;; not cool.
+  [(get-block-x-size band) (get-block-y-size band)])
 
 (defn get-category-names
   "Fetch the list of category names for this raster"
