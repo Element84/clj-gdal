@@ -42,7 +42,23 @@
       (testing "Java NIO buffer type"
         (is (= nio/short-buffer)))
       (testing "Get band number"
-        (is (= 1 (get-band band)))))
+        (is (= 1 (get-band band))))
+      (testing "Get color interpretation"
+        (is (= 1 (get-color-interpretation band))))
+      (testing "Get color table"
+        (not (= nil (get-color-table band))))
+      (testing "Get default raster attribute table"
+        (not (= nil (get-default-rat band))))
+      (testing "Get unit type (blank for test data)"
+        (is (= "" (get-unit-type band))))
+      (testing "Does not have arbitrary overviews"
+        (is (= false (has-arbitrary-overviews band))))
+      (testing "Get mask band (which is the 0th band in the same dataset)"
+        (is (= 0 (-> band get-mask-band get-band))))
+      (testing "Get mask flags (0x08 / GMF_NODATA)"
+        (is (= 8 (get-mask-flags band))))
+      (testing "Get dataset"
+        (not (= nil (get-dataset band)))))
     (testing "Raster sequence (seq-ing many blocks as vectors)"
       (testing "implicit call"
         ;; The test image is 1000x1000 pixels. The natural block

@@ -77,7 +77,8 @@
 (defn get-color-interpretation
   "How should this band be interpreted as color?"
   [band]
-  nil)
+  ; I wonder if a symbol ought to be returned.
+  (. band GetColorInterpretation))
 
 (defn set-color-interpretation
   "Set color interpretation of band"
@@ -87,7 +88,7 @@
 (defn get-color-table
   "Fetch the color table associated with band"
   [band]
-  nil)
+  (. band GetColorTable))
 
 (defn set-color-table
   "Set color table associated with band"
@@ -97,7 +98,7 @@
 (defn get-dataset
   "Get the dataset to which the band belongs"
   [band]
-  nil)
+  (. band GetDataset))
 
 (defn get-data-type
   "Return GDAL data type of the band"
@@ -163,7 +164,7 @@
 (defn get-default-rat
   "Fetch the default raster attribute table"
   [band]
-  nil)
+  (. band GetDefaultRAT))
 
 (defn set-default-rat
   "Set raster color table"
@@ -177,12 +178,12 @@
 (defn get-mask-band
   "Return the mask band associated with band"
   [band]
-  nil)
+  (. band GetMaskBand))
 
 (defn get-mask-flags
   "Return the status flags of the mask band associated with the band"
   [band]
-  nil)
+  (. band GetMaskFlags))
 
 (defn get-maximum
   "Fetch maximum value for band"
@@ -249,7 +250,7 @@
 (defn get-unit-type
   "Fetch raster unit type"
   [band]
-  nil)
+  (. band GetUnitType))
 
 (defn set-unit-type
   "Set unit type"
@@ -274,7 +275,7 @@
 (defn has-arbitrary-overviews
   "Check for arbitrary overviews"
   [band]
-  nil)
+  (. band HasArbitraryOverviews))
 
 (defn read-block-direct
   "Read a block of image data efficiently"
