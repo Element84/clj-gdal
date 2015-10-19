@@ -82,10 +82,6 @@
         (let [blocks (raster-seq band :xstep 100 :ystep 50)]
           (is (= 200 (count blocks))))))
     (testing "Raster sequence of byte buffer"
-      (let [blocks (raster-byte-buffer-seq band :xstep 500 :ystep 500)]
+      (let [blocks (raster-seq band :xstep 500 :ystep 500)]
         (is (= 4 (count blocks)))
-        (is (every? #(= (type %) java.nio.DirectByteBuffer) blocks))))
-    (testing "Raster vector (getting one block as a vector)"
-      (testing "explicit call for small area"
-        (let [block (raster-vec band :xstart 10 :xstop 20 :ystart 10 :ystop 20)]
-          (is (= 100 (count block))))))))
+        (is (every? #(= (type (:data %)) java.nio.DirectByteBuffer) blocks))))))
