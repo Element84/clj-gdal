@@ -342,6 +342,29 @@
            y (range xstart ystop ystep)]
        (-> (reader x y) buffer-type nio/buffer-to-array vec)))))
 
+(defn raster-byte-buffer-seq
+  "Read an entire raster in blocks without converting buffer to array
+
+  This function is for power users that intend to use byte buffer contents
+  directly. It avoids the overhead raster-seq incurs when it converts the
+  buffer contents into a vector."
+  [band & {:keys [xstart ystart xstop ystop xstep ystep java-type]
+            :or   {xstart    0
+                   ystart    0
+                   xstop     (get-x-size band)
+                   ystop     (get-y-size band)
+                   xstep     (get-block-x-size band)
+                   ystep     (get-block-y-size band)
+                   java-type (get-java-type band)
+            :as args}}]
+   (let [gdal-type   (get-gdal-type java-type)
+         byte-count  (get-byte-count java-type)
+         buffer      (allocate-block-buffer band xstep ystep byte-count)
+         reader      #(read-raster-direct band %1 %2 xstep ystep xstep ystep gdal-type buffer)]
+     (for [x (range xstart xstop xstep)
+           y (range xstart ystop ystep)]
+       (reader x y))))
+
 (defn clear-buffer
   "Set buffer values to zero" ; this could be a mistake... zero isn't always fill!
   [buffer]
