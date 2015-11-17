@@ -29,6 +29,7 @@ library.
 
 ## Dependencies [&#x219F;](#contents)
 
+* Java 1.7 or higher (uses java.nio via the nio Clojure wrapper)
 * GDAL 2.0.0 (included)
 
 
