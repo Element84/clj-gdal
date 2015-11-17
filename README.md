@@ -8,7 +8,7 @@
 
 *Clojure support for GDAL*
 
-##### Contents
+#### Contents
 
 * [About](#about-)
 * [Dependencies](#dependencies-)
