@@ -29,7 +29,7 @@ library.
 
 ## Dependencies [&#x219F;](#contents)
 
-Currently, only GDAL 2.0.1 support is provided.
+* GDAL 2.0.0 (included)
 
 
 ## Getting Started [&#x219F;](#contents)
