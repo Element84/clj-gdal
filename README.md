@@ -12,7 +12,7 @@
 
 * [About](#about-)
 * [Dependencies](#dependencies-)
-* [Getting Started](#getting-started-)
+* [Usage](#usage-)
 * [License](#license-)
 
 
@@ -30,16 +30,27 @@ library.
 ## Dependencies [&#x219F;](#contents)
 
 * Java 1.7 or higher (uses java.nio via the nio Clojure wrapper)
-* GDAL 2.0.0 (included)
+* Java GDAL 2.0.0 library (included)
+
+The Java library downloaded from Maven still requires that you have GDAL 2.x
+compiled on your system, as it references libraries which GDAL builds.
 
 
-## Getting Started [&#x219F;](#contents)
+## Usage [&#x219F;](#contents)
 
-You must compile GDAL 2.0.1 Java SWIG bindings and add the generated libraries to `LD_LIBRARY_PATH`
-
-Then add clj-gdal a dependency to your lein project:
+Add clj-gdal a dependency to your lein project:
 
 [![Clojars Project](http://clojars.org/clj-gdal/latest-version.svg)](http://clojars.org/clj-gdal)
+
+Then start up the Clojure REPL:
+
+```bash
+$ lein repl
+```
+```clojure
+clj-gdal.core=> (init)
+clj-gdal.core=> (open "LC80280302015112LGN00_B1.TIF")
+```
 
 
 ## License [&#x219F;](#contents)
