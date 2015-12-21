@@ -1,12 +1,12 @@
 # clj-gdal
 
+*Clojure support for GDAL*
+
 [![][clj-gdal-logo]][clj-gdal-logo-large]
 
 [clj-gdal-logo]: resources/images/clj-gdal-LogoColor-x250.png
 [clj-gdal-logo-large]: resources/images/clj-gdal-LogoColor-x1000.png
 
-
-*Clojure support for GDAL*
 
 #### Contents
 
