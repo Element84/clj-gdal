@@ -1,4 +1,4 @@
-(defproject clj-gdal "0.1.0"
+(defproject oubiwann/clj-gdal "0.1.0"
   :description "GDAL for Clojure"
   :url "http://github.com/oubiwann/clj-gdal"
   :license {:name "Eclipse Public License"
