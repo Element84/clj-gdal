@@ -1,4 +1,4 @@
-(defproject oubiwann/clj-gdal "0.1.0"
+(defproject oubiwann/clj-gdal "0.2.0"
   :description "Clojure-idiomatic GDAL wrapper"
   :url "http://github.com/oubiwann/clj-gdal"
   :license {:name "Eclipse Public License"
