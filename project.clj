@@ -6,4 +6,4 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.gdal/gdal "1.11.2"]
                  [nio "1.0.3"]]
-  :repl-options {:init-ns clj-gdal.core})
+  :repl-options {:init-ns gdal.core})
