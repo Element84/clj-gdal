@@ -1,6 +1,6 @@
-(ns clj-gdal.core-test
+(ns gdal.core-test
   (:require [clojure.test :refer :all]
-            [clj-gdal.core :refer :all]))
+            [gdal.core :refer :all]))
 
 (deftest test-drivers
   ;; Drivers are loaded during GDAL initailization. Before calling

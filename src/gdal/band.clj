@@ -1,8 +1,7 @@
-(ns clj-gdal.band
+(ns gdal.band
   (:require [nio.core :as nio])
   (:import [java.nio ByteBuffer]
            [org.gdal.gdalconst gdalconst]))
-
 
 (defn checksum
   "Compute checksum for whole image"
@@ -117,8 +116,8 @@
 
 (def gdal_type->java_type
   {gdalconst/GDT_Byte     java.lang.Byte
-   gdalconst/GDT_Int16    java.lang.Short    
-   gdalconst/GDT_Int32    java.lang.Integer  
+   gdalconst/GDT_Int16    java.lang.Short
+   gdalconst/GDT_Int32    java.lang.Integer
    gdalconst/GDT_Float32  java.lang.Float})
 
 (defn get-java-type

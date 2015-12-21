@@ -1,8 +1,7 @@
-(ns clj-gdal.dataset
+(ns gdal.dataset
   (:import [org.gdal.gdal Dataset]
            [org.gdal.gdalconst gdalconst]
            [java.nio ByteBuffer]))
-
 
 (defn get-geo-transform
   "Get the affine transformation coefficients of the dataset.

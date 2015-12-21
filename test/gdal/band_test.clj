@@ -1,8 +1,8 @@
-(ns clj-gdal.band-test
+(ns gdal.band-test
   (:require [clojure.test :refer :all]
-            [clj-gdal.band :refer :all]
-            [clj-gdal.core :as gdal]
-            [clj-gdal.dataset :as data]
+            [gdal.band :refer :all]
+            [gdal.core :as gdal]
+            [gdal.dataset :as data]
             [nio.core :as nio])
   (:import [org.gdal.gdalconst gdalconst]))
 
