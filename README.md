@@ -59,6 +59,7 @@ $ lein repl
 ```clojure
 gdal.core=> (init)
 gdal.core=> (open "LC80280302015112LGN00_B1.TIF")
+#object[org.gdal.gdal.Dataset 0x484dd493 "org.gdal.gdal.Dataset@484dd493"]
 ```
 
 
