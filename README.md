@@ -1,6 +1,6 @@
 # clj-gdal
 
-*Clojure support for GDAL*
+*Clojure-idiomatic GDAL wrapper*
 
 [![][clj-gdal-logo]][clj-gdal-logo-large]
 
@@ -40,7 +40,7 @@ compiled on your system, as it references libraries which GDAL builds.
 
 Add clj-gdal a dependency to your lein project:
 
-[![Clojars Project](http://clojars.org/clj-gdal/latest-version.svg)](http://clojars.org/clj-gdal)
+[![Clojars Project](http://clojars.org/oubiwann/clj-gdal/latest-version.svg)](http://clojars.org/oubiwann/clj-gdal)
 
 Then start up the Clojure REPL:
 

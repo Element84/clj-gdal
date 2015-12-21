@@ -1,5 +1,5 @@
 (defproject oubiwann/clj-gdal "0.1.0"
-  :description "GDAL for Clojure"
+  :description "Clojure-idiomatic GDAL wrapper"
   :url "http://github.com/oubiwann/clj-gdal"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
