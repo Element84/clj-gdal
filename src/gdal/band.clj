@@ -42,17 +42,17 @@
 (defn get-band
   "Fetch the band number"
   [band]
-  (. band GetBand))
+  (.GetBand band))
 
 (defn get-block-x-size
   "Fetch the natural block width of this band"
   [band]
-  (. band GetBlockXSize))
+  (.GetBlockXSize band))
 
 (defn get-block-y-size
   "Fetch the natural block heigh of this band"
   [band]
-  (. band GetBlockYSize))
+  (.GetBlockYSize band ))
 
 (defn get-block-size
   "Fetch the natural block size of this band"
@@ -65,28 +65,29 @@
 (defn get-category-names
   "Fetch the list of category names for this raster"
   [band]
-  nil)
+  (.GetCategoryNames band))
 
 (defn set-category-names
   "Set the category names for this band"
-  [band names])
+  [band names]
+  (.GetCategoryNames band names))
 
 ; shall we use a symbol instead of an int constant??
 (defn get-color-interpretation
   "How should this band be interpreted as color?"
   [band]
   ; I wonder if a symbol ought to be returned.
-  (. band GetColorInterpretation))
+  (.GetColorInterpretation band))
 
 (defn set-color-interpretation
   "Set color interpretation of band"
   [band interpretation]
-  nil)
+  (.SetColorInterpretation bane interpretation)
 
 (defn get-color-table
   "Fetch the color table associated with band"
   [band]
-  (. band GetColorTable))
+  (.GetColorTable band))
 
 (defn set-color-table
   "Set color table associated with band"
@@ -96,14 +97,14 @@
 (defn get-dataset
   "Get the dataset to which the band belongs"
   [band]
-  (. band GetDataset))
+  (.GetDataset band))
 
 (defn get-data-type
   "Return GDAL data type of the band"
   [band]
-  (. band getDataType))
+  (.getDataType band))
 
-(def java_type->gdal_type
+(def java-type->gdal-type
   {java.lang.Byte     gdalconst/GDT_Byte
    java.lang.Short    gdalconst/GDT_Int16
    java.lang.Integer  gdalconst/GDT_Int32
@@ -113,7 +114,7 @@
   "Get the GDAL type needed to convert rasters to a Java type"
   [java-type] (java_type->gdal_type java-type))
 
-(def gdal_type->java_type
+(def gdal-type->java-type
   {gdalconst/GDT_Byte     java.lang.Byte
    gdalconst/GDT_Int16    java.lang.Short
    gdalconst/GDT_Int32    java.lang.Integer
@@ -123,9 +124,9 @@
   "Get the best Java type for the given GDAL band"
   [band]
   (let [gdal-type (get-data-type band)]
-    (gdal_type->java_type gdal-type)))
+    (gdal-type->java-type gdal-type)))
 
-(def java_type->buffer_type
+(def java-type->buffer-type
   {java.lang.Byte     nio/byte-buffer
    java.lang.Short    nio/short-buffer
    java.lang.Integer  nio/int-buffer
@@ -133,14 +134,14 @@
 
 (defn get-buffer-type
   "Get the nio buffer converter for the Java type"
-  [java-type] (java_type->buffer_type java-type))
+  [java-type] (java-type->buffer-type java-type))
 
 (defn get-data-type-size
   "Number of bytes per pixel"
   [band]
-  (let [gdal_type (get-data-type band)
-        byte_size (get-in gdal_type->java_type [gdal_type :size])]
-    (/ byte_size 8)))
+  (let [gdal-type (get-data-type band)
+        byte-size (get-in gdal-type->java-type [gdal-type :size])]
+    (/ byte-size 8)))
 
 ; unsigned integers are too big for the signed java types...
 ; but they require special handling to make fit.
@@ -162,7 +163,7 @@
 (defn get-default-rat
   "Fetch the default raster attribute table"
   [band]
-  (. band GetDefaultRAT))
+  (.GetDefaultRAT band))
 
 (defn set-default-rat
   "Set raster color table"
@@ -176,38 +177,36 @@
 (defn get-mask-band
   "Return the mask band associated with band"
   [band]
-  (. band GetMaskBand))
+  (.GetMaskBand band))
 
 (defn get-mask-flags
   "Return the status flags of the mask band associated with the band"
   [band]
-  (. band GetMaskFlags))
+  (.GetMaskFlags band))
 
 (defn get-maximum
   "Fetch maximum value for band"
   [band]
   (let [result (make-array java.lang.Double 1)
-        become short
-        safely #(cond % (become %))]
-    (. band GetMaximum result)
+        become
+        safely #(cond % (short %))]
+    (.GetMaximum band result)
     (-> result first safely)))
 
 (defn get-minimum
   "Fetch minimum value for band"
   [band]
   (let [result (make-array java.lang.Double 1)
-        become short
-        safely #(cond % (become %))]
-    (. band GetMinimum result)
+        safely #(cond % (short %))]
+    (.GetMinimum band result)
     (-> result first safely)))
 
 (defn get-no-data-value
   "Fetch the no data value for this band"
   [band]
   (let [result (make-array java.lang.Double 1)
-        become short
-        safely #(cond % (become %))]
-    (. band GetNoDataValue result)
+        safely #(cond % (short %))]
+    (.GetNoDataValue band result)
     (-> result first safely)))
 
 (defn set-no-data-value
@@ -275,28 +274,28 @@
 (defn get-x-size
   "Fetch number of pixels along x axis"
   [band]
-  (. band GetXSize))
+  (.GetXSize band))
 
 (defn get-y-size
   "Fetch number of pixels along y axis"
   [band]
-  (. band GetYSize))
+  (.GetYSize band))
 
 (defn has-arbitrary-overviews
   "Check for arbitrary overviews"
   [band]
-  (. band HasArbitraryOverviews))
+  (.HasArbitraryOverviews band))
 
 (defn read-block-direct
   "Read a block of image data efficiently"
   [band xoff yoff buffer]
-  (. band ReadBlock_Direct xoff yoff buffer)
+  (.ReadBlock_Direct band xoff yoff buffer)
   buffer)
 
 (defn read-raster-direct
   "Read a region of image data"
   [band xoff yoff xsize ysize xbsize ybsize btype buffer]
-  (. band ReadRaster_Direct xoff yoff xsize ysize xbsize ybsize btype buffer)
+  (.ReadRaster_Direct band xoff yoff xsize ysize xbsize ybsize btype buffer)
   buffer)
 
 (defn read-raster
