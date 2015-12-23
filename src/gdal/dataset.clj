@@ -1,7 +1,8 @@
 (ns gdal.dataset
   (:import [org.gdal.gdal Dataset]
            [org.gdal.gdalconst gdalconst]
-           [java.nio ByteBuffer]))
+           [java.nio ByteBuffer])
+  (:refer-clojure :exclude [read]))
 
 (defn get-geo-transform
   "Get the affine transformation coefficients of the dataset.
@@ -16,34 +17,45 @@
   gdal-clj.
   "
   [dataset]
-  (vec (. dataset GetGeoTransform)))
+  (vec (.GetGeoTransform dataset)))
 
 (defn get-projection
   "Get the projection definition WKT string for dataset"
   [dataset]
-  (. dataset GetProjection))
+  (.GetProjection dataset))
 
-(defn get-raster-count
+(defn get-band-count
   "Get the number of raster bands in the dataset"
   [dataset]
-  (. dataset GetRasterCount))
+  (.GetRasterCount dataset))
 
-(defn get-raster-x-size
+(defn get-x-size
   "Raster width in pixels"
   [dataset]
-  (. dataset GetRasterXSize))
+  (.GetRasterXSize dataset))
 
-(defn get-raster-y-size
+(defn get-y-size
   "Raster height in pixels"
   [dataset]
-  (. dataset GetRasterYSize))
+  (.GetRasterYSize dataset))
 
-(defn get-raster-band
+(defn get-size [data]
+  [(get-x-size data) (get-y-size data)])
+
+(defn get-band
   "Get the nth raster band, starts with index of 1 in keeping with GDAL conventions"
   [dataset n]
-  (. dataset GetRasterBand n))
+  (.GetRasterBand dataset n))
 
-(defn read-raster
+(defn read
   "Read a region of image data from multiple bands"
   [dataset xoff yoff xsize ysize & bands]
   nil)
+
+;;; Aliases
+
+(def get-proj #'get-projection)
+(def count-bands #'get-band-count)
+(def read-raster #'read)
+(def get-raster-x-size #'get-x-size)
+(def get-raster-y-size #'get-y-size)
