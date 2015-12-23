@@ -81,7 +81,7 @@ gdal.dev=> (gdal/init)
 nil
 gdal.dev=> (def data (gdal/open "LC80290302015263LGN00_B2.TIF"))
 #'gdal.dev/tiff-file
-gdal.dev=> (def data (gdal/open tiff-file))
+gdal.dev=> (def tiff-data (gdal/open tiff-file))
 #'gdal.dev/data
 ```
 
@@ -89,11 +89,11 @@ gdal.dev=> (def data (gdal/open tiff-file))
 ### Working with Dataset Objects
 
 ```clojure
-gdal.dev=> (dataset/get-size data)
+gdal.dev=> (dataset/get-size tiff-data)
 [7681 7811]
-gdal.dev=> (dataset/count-bands data)
+gdal.dev=> (dataset/count-bands tiff-data)
 1
-gdal.dev=> (def band-data (dataset/get-band data 1))
+gdal.dev=> (def band-data (dataset/get-band tiff-data 1))
 #'gdal.dev/band-data
 ```
 
