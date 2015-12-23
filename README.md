@@ -82,7 +82,7 @@ nil
 gdal.dev=> (def data (gdal/open "LC80290302015263LGN00_B2.TIF"))
 #'gdal.dev/tiff-file
 gdal.dev=> (def tiff-data (gdal/open tiff-file))
-#'gdal.dev/data
+#'gdal.dev/tiff-data
 ```
 
 
