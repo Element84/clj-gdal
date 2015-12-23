@@ -3,10 +3,9 @@
   (:import [java.nio ByteBuffer]
            [org.gdal.gdalconst gdalconst]))
 
-(defn checksum
+(defn get-checksum [band]
   "Compute checksum for whole image"
-  ([band] nil)
-  ([band xoff yoff xsize ysize] nil))
+  (.Checksum band))
 
 (defn compute-band-stats
   "Compute mean and standard deviation values"
@@ -404,3 +403,6 @@
   "Write a region of image data for this band"
   [band xoff yoff xsize ysize data]
   nil)
+
+;;; Aliases
+(def checksum #'get-checksum)
