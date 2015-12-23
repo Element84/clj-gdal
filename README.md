@@ -56,10 +56,54 @@ Then start up the Clojure REPL:
 ```bash
 $ lein repl
 ```
+
+The following examples use the development convenience namespace ``gdal-dev``. This
+namespace has the following requires already done for you:
+
 ```clojure
-gdal.core=> (init)
-gdal.core=> (open "LC80280302015112LGN00_B1.TIF")
-#object[org.gdal.gdal.Dataset 0x484dd493 "org.gdal.gdal.Dataset@484dd493"]
+(ns gdal.dev
+  (:require [clojure.pprint :as pp]
+            [clojure.reflect :as reflect]
+            [clojure.tools.logging :as log]
+            [clojure.tools.namespace.repl :as repl]
+            [gdal.core :as gdal]
+            [gdal.band :as band]
+            [gdal.dataset :as dataset])
+  (:import [java.nio ByteBuffer]
+           [org.gdal.gdalconst gdalconst]))
+```
+
+
+### Top-level GDAL Functions
+
+```clojure
+gdal.dev=> (gdal/init)
+nil
+gdal.dev=> (def data (gdal/open "LC80290302015263LGN00_B2.TIF"))
+#'gdal.dev/tiff-file
+gdal.dev=> (def data (gdal/open tiff-file))
+#'gdal.dev/data
+```
+
+
+### Working with Dataset Objects
+
+```clojure
+gdal.dev=> (dataset/get-size data)
+[7681 7811]
+gdal.dev=> (dataset/count-bands data)
+1
+gdal.dev=> (def band-data (dataset/get-band data 1))
+#'gdal.dev/band-data
+```
+
+
+### Working with Band Objects
+
+```clojure
+gdal.dev=> (band/get-checksum band-data)
+60155
+
 ```
 
 
