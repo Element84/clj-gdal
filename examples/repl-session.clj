@@ -9,3 +9,25 @@
 
 (def band-data (dataset/get-band tiff-data 1))
 (band/get-checksum band-data)
+
+(def proj-data (dataset/get-projection tiff-data))
+(proj/get-name proj-data)
+(proj/get-ids proj-data)
+(:code-space (proj/get-id proj-data))
+(:code (proj/get-id proj-data))
+
+(proj/get-datum proj-data)
+(proj/get-datum-name proj-data)
+(proj/get-ellipsoid proj-data)
+(proj/get-ellipsoid-name proj-data)
+(proj/get-eccentricity proj-data)
+(proj/get-prime-meridian proj-data)
+(proj/get-bw-params proj-data)
+
+(proj/get-coord-system proj-data)
+(proj/get-coord-name proj-data)
+(proj/get-coord-dim proj-data)
+(proj/get-axes proj-data)
+(proj/get-axis proj-data 1)
+(proj/get-axis-name proj-data 1)
+(proj/get-axis-unit proj-data 1)

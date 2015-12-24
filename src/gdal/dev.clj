@@ -5,7 +5,9 @@
             [clojure.tools.namespace.repl :as repl]
             [gdal.core :as gdal]
             [gdal.band :as band]
-            [gdal.dataset :as dataset])
+            [gdal.dataset :as dataset]
+            [gdal.proj :as proj]
+            [gdal.util :refer :all])
   (:import [java.nio ByteBuffer]
            [org.gdal.gdalconst gdalconst]))
 

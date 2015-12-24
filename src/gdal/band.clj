@@ -82,7 +82,7 @@
 (defn set-color-interpretation
   "Set color interpretation of band"
   [band interpretation]
-  (.SetColorInterpretation bane interpretation)
+  (.SetColorInterpretation band interpretation))
 
 (defn get-color-table
   "Fetch the color table associated with band"
@@ -112,7 +112,7 @@
 
 (defn get-gdal-type
   "Get the GDAL type needed to convert rasters to a Java type"
-  [java-type] (java_type->gdal_type java-type))
+  [java-type] (java-type->gdal-type java-type))
 
 (def gdal-type->java-type
   {gdalconst/GDT_Byte     java.lang.Byte
@@ -188,7 +188,6 @@
   "Fetch maximum value for band"
   [band]
   (let [result (make-array java.lang.Double 1)
-        become
         safely #(cond % (short %))]
     (.GetMaximum band result)
     (-> result first safely)))

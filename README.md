@@ -107,6 +107,50 @@ gdal.dev=> (band/get-checksum band-data)
 ```
 
 
+### Working with Projection Objects
+
+Top-level data:
+
+```clojure
+
+```
+
+
+Datum Functions:
+
+```clojure
+gdal.dev=> (proj/get-datum proj-data)
+#object[org.apache.sis.referencing.datum.DefaultGeodeticDatum 0x659718b5 "GeodeticDatum[\"WGS_1984\",\n  Ellipsoid[\"WGS 84\", 6378137.0, 298.257223563],\n  Id[\"EPSG\", 6326, URI[\"urn:ogc:def:datum:EPSG::6326\"]]]"]
+gdal.dev=> (proj/get-ellipsoid proj-data)
+#object[org.apache.sis.referencing.datum.DefaultEllipsoid 0x1b798fdd "Ellipsoid[\"WGS 84\", 6378137.0, 298.257223563, Id[\"EPSG\", 7030, URI[\"urn:ogc:def:ellipsoid:EPSG::7030\"]]]"]
+gdal.dev=> (proj/get-prime-meridian proj-data)
+#object[org.apache.sis.referencing.datum.DefaultPrimeMeridian 0x4a616ee4 "PrimeMeridian[\"Greenwich\", 0.0]"]
+gdal.dev=> (proj/get-bw-params proj-data)
+#object["[Lorg.apache.sis.referencing.datum.BursaWolfParameters;" 0x5b736d8 "[Lorg.apache.sis.referencing.datum.BursaWolfParameters;@5b736d8"]
+
+```
+
+Coordinate Systems and Axes:
+
+```clojure
+gdal.dev=> (proj/get-coord-system proj-data)
+#object[org.apache.sis.referencing.cs.DefaultCartesianCS 0xaeb1198 "CS[Cartesian, 2]"]
+gdal.dev=> (proj/get-coord-name proj-data)
+"Cartesian CS: East (m), North (m)."
+gdal.dev=> (proj/get-coord-dim proj-data)
+2
+gdal.dev=> (proj/get-axes proj-data)
+(#object[org.apache.sis.referencing.cs.DefaultCoordinateSystemAxis 0x1c2152ac "Axis[\"Easting (E)\", east, Unit[\"metre\", 1]]"] #object[org.apache.sis.referencing.cs.DefaultCoordinateSystemAxis 0x4fbaa8a1 "Axis[\"Northing (N)\", north, Unit[\"metre\", 1]]"])
+gdal.dev=> (proj/get-axis proj-data 1)
+#object[org.apache.sis.referencing.cs.DefaultCoordinateSystemAxis 0x4fbaa8a1 "Axis[\"Northing (N)\", north, Unit[\"metre\", 1]]"]
+gdal.dev=> (proj/get-axis-name proj-data 1)
+"Northing"
+gdal.dev=> (proj/get-axis-unit proj-data 1)
+"m"
+
+```
+
+
 ## License [&#x219F;](#contents)
 
 Copyright © 2015 Jonathan Morton, Duncan McGreggor
