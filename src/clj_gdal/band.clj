@@ -44,17 +44,17 @@
 (defn get-band
   "Fetch the band number"
   [band]
-  (. band GetBand))
+  (.GetBand band))
 
 (defn get-block-x-size
   "Fetch the natural block width of this band"
   [band]
-  (. band GetBlockXSize))
+  (.GetBlockXSize band))
 
 (defn get-block-y-size
   "Fetch the natural block heigh of this band"
   [band]
-  (. band GetBlockYSize))
+  (.GetBlockYSize band))
 
 (defn get-block-size
   "Fetch the natural block size of this band"
@@ -78,7 +78,7 @@
   "How should this band be interpreted as color?"
   [band]
   ; I wonder if a symbol ought to be returned.
-  (. band GetColorInterpretation))
+  (.GetColorInterpretation band))
 
 (defn set-color-interpretation
   "Set color interpretation of band"
@@ -88,7 +88,7 @@
 (defn get-color-table
   "Fetch the color table associated with band"
   [band]
-  (. band GetColorTable))
+  `(.GetColorTable band))
 
 (defn set-color-table
   "Set color table associated with band"
@@ -98,12 +98,12 @@
 (defn get-dataset
   "Get the dataset to which the band belongs"
   [band]
-  (. band GetDataset))
+  (.GetDataset band))
 
 (defn get-data-type
   "Return GDAL data type of the band"
   [band]
-  (. band getDataType))
+  (.getDataType band))
 
 (def java_type->gdal_type
   {java.lang.Byte     gdalconst/GDT_Byte
@@ -164,7 +164,7 @@
 (defn get-default-rat
   "Fetch the default raster attribute table"
   [band]
-  (. band GetDefaultRAT))
+  (.GetDefaultRAT band))
 
 (defn set-default-rat
   "Set raster color table"
@@ -178,12 +178,12 @@
 (defn get-mask-band
   "Return the mask band associated with band"
   [band]
-  (. band GetMaskBand))
+  (.GetMaskBand band))
 
 (defn get-mask-flags
   "Return the status flags of the mask band associated with the band"
   [band]
-  (. band GetMaskFlags))
+  (.GetMaskFlags band))
 
 (defn get-maximum
   "Fetch maximum value for band"
@@ -191,7 +191,7 @@
   (let [result (make-array java.lang.Double 1)
         become short
         safely #(cond % (become %))]
-    (. band GetMaximum result)
+    (.GetMaximum band result)
     (-> result first safely)))
 
 (defn get-minimum
@@ -200,7 +200,7 @@
   (let [result (make-array java.lang.Double 1)
         become short
         safely #(cond % (become %))]
-    (. band GetMinimum result)
+    (.GetMinimum band result)
     (-> result first safely)))
 
 (defn get-no-data-value
@@ -209,7 +209,7 @@
   (let [result (make-array java.lang.Double 1)
         become short
         safely #(cond % (become %))]
-    (. band GetNoDataValue result)
+    (.GetNoDataValue band result)
     (-> result first safely)))
 
 (defn set-no-data-value
@@ -262,7 +262,7 @@
 (defn get-unit-type
   "Fetch raster unit type"
   [band]
-  (. band GetUnitType))
+  (.GetUnitType band))
 
 (defn set-unit-type
   "Set unit type"
@@ -277,28 +277,28 @@
 (defn get-x-size
   "Fetch number of pixels along x axis"
   [band]
-  (. band GetXSize))
+  (.GetXSize band))
 
 (defn get-y-size
   "Fetch number of pixels along y axis"
   [band]
-  (. band GetYSize))
+  (.GetYSize band))
 
 (defn has-arbitrary-overviews
   "Check for arbitrary overviews"
   [band]
-  (. band HasArbitraryOverviews))
+  (.HasArbitraryOverviews band))
 
 (defn read-block-direct
   "Read a block of image data efficiently"
   [band xoff yoff buffer]
-  (. band ReadBlock_Direct xoff yoff buffer)
+  (.ReadBlock_Direct band xoff yoff buffer)
   buffer)
 
 (defn read-raster-direct
   "Read a region of image data"
   [band xoff yoff xsize ysize xbsize ybsize btype buffer]
-  (. band ReadRaster_Direct xoff yoff xsize ysize xbsize ybsize btype buffer)
+  (.ReadRaster_Direct band xoff yoff xsize ysize xbsize ybsize btype buffer)
   buffer)
 
 (defn read-raster
@@ -319,7 +319,7 @@
      (allocate-block-buffer band xblock yblock byte-count)))
   ([band xblock yblock byte-count] ;; xblock/yblock
    (let [buffer (ByteBuffer/allocateDirect (* xblock yblock byte-count))]
-     (. buffer order (java.nio.ByteOrder/nativeOrder))
+     (.order buffer (java.nio.ByteOrder/nativeOrder))
      buffer)))
 
 (defn raster-seq
@@ -368,8 +368,8 @@
 (defn clear-buffer
   "Set buffer values to zero" ; this could be a mistake... zero isn't always fill!
   [buffer]
-  (let [size (. buffer capacity)]
-    (map #(. buffer put % 0) (range size))))
+  (let [size (.capacity buffer)]
+    (map #(.put buffer % 0) (range size))))
 
 (defn raster-vec
   "Read partial raster into single block"
