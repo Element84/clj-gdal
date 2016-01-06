@@ -17,32 +17,32 @@
   gdal-clj.
   "
   [dataset]
-  (vec (. dataset GetGeoTransform)))
+  (vec (.GetGeoTransform dataset)))
 
 (defn get-projection
   "Get the projection definition WKT string for dataset"
   [dataset]
-  (. dataset GetProjection))
+  (.GetProjection dataset))
 
 (defn get-raster-count
   "Get the number of raster bands in the dataset"
   [dataset]
-  (. dataset GetRasterCount))
+  (.GetRasterCount dataset))
 
 (defn get-raster-x-size
   "Raster width in pixels"
   [dataset]
-  (. dataset GetRasterXSize))
+  (.GetRasterXSize dataset))
 
 (defn get-raster-y-size
   "Raster height in pixels"
   [dataset]
-  (. dataset GetRasterYSize))
+  (.GetRasterYSize dataset))
 
 (defn get-raster-band
   "Get the nth raster band, starts with index of 1 in keeping with GDAL conventions"
   [dataset n]
-  (. dataset GetRasterBand n))
+  (.GetRasterBand dataset n))
 
 (defn read-raster
   "Read a region of image data from multiple bands"
