@@ -297,53 +297,14 @@
 
 (defn read-raster-direct
   "Read a region of image data"
-  [band xoff yoff xsize ysize xbsize ybsize btype buffer]
-  (.ReadRaster_Direct band xoff yoff xsize ysize xbsize ybsize btype buffer)
-  buffer)
-
-(defn read-raster
-  "Read a region of image data"
-  [band xoff yoff xsize ysize]
-  nil)
-
-(defn allocate-block-buffer
-  "Create a buffer big enough to hold data in raster"
-  ([band]
-   (let [xblock (get-block-x-size band)
-         yblock(get-block-y-size band)
-         java-type  (get-java-type band)
-         byte-count (get-byte-count java-type)]
-     (allocate-block-buffer band xblock yblock byte-count)))
-  ([band xblock yblock]
-   (let [byte-count (-> band get-java-type get-byte-count)]
-     (allocate-block-buffer band xblock yblock byte-count)))
-  ([band xblock yblock byte-count] ;; xblock/yblock
-   (let [buffer (ByteBuffer/allocateDirect (* xblock yblock byte-count))]
-     (.order buffer (java.nio.ByteOrder/nativeOrder))
-     buffer)))
+  ([band xoff yoff xsize ysize]
+   (let [buf-type (get-data-type band)]
+     (.ReadRaster_Direct band xoff yoff xsize ysize buf-type)))
+  ([band xoff yoff xsize ysize buf-xsize buf-ysize buf-type buffer]
+   (.ReadRaster_Direct band xoff yoff xsize ysize buf-xsize buf-ysize buf-type buffer)))
 
 (defn raster-seq
-  "Read entire raster in blocks"
-  ([band & {:keys [xstart ystart xstop ystop xstep ystep java-type]
-            :or   {xstart    0
-                   ystart    0
-                   xstop     (get-x-size band)
-                   ystop     (get-y-size band)
-                   xstep     (get-block-x-size band)
-                   ystep     (get-block-y-size band)
-                   java-type (get-java-type band)
-            :as args}}]
-   (let [gdal-type   (get-gdal-type java-type)
-         buffer-type (get-buffer-type java-type)
-         byte-count  (get-byte-count java-type)
-         buffer      (allocate-block-buffer band xstep ystep byte-count)
-         reader      #(read-raster-direct band %1 %2 xstep ystep xstep ystep gdal-type buffer)]
-     (for [x (range xstart xstop xstep)
-           y (range xstart ystop ystep)]
-       (-> (reader x y) buffer-type nio/buffer-to-array vec)))))
-
-(defn raster-byte-buffer-seq
-  "Read an entire raster in blocks without converting buffer to array
+  "Read an entire raster in blocks without converting buffer to array.
 
   This function is for power users that intend to use byte buffer contents
   directly. It avoids the overhead raster-seq incurs when it converts the
@@ -355,41 +316,11 @@
                    ystop     (get-y-size band)
                    xstep     (get-block-x-size band)
                    ystep     (get-block-y-size band)
-                   java-type (get-java-type band)
             :as args}}]
-   (let [gdal-type   (get-gdal-type java-type)
-         byte-count  (get-byte-count java-type)
-         buffer      (allocate-block-buffer band xstep ystep byte-count)
-         reader      #(read-raster-direct band %1 %2 xstep ystep xstep ystep gdal-type buffer)]
+   (let [reader #(read-raster-direct band %1 %2 xstep ystep)]
      (for [x (range xstart xstop xstep)
            y (range xstart ystop ystep)]
-       (reader x y))))
-
-(defn clear-buffer
-  "Set buffer values to zero" ; this could be a mistake... zero isn't always fill!
-  [buffer]
-  (let [size (.capacity buffer)]
-    (map #(.put buffer % 0) (range size))))
-
-(defn raster-vec
-  "Read partial raster into single block"
-  [band & {:keys [xstart xstop ystart ystop xblock yblock java-type byte-count buffer]
-            :or   {xstart 0
-                   ystart 0
-                   xstop (get-x-size band)
-                   ystop (get-y-size band)
-                   xblock (- xstop xstart)
-                   yblock (- ystop ystart)
-                   java-type (get-java-type band)
-                   byte-count (get-byte-count java-type)
-                   buffer (allocate-block-buffer band xblock yblock byte-count)
-            :as args}}]
-   (let [gdal-type (get-gdal-type java-type)
-         buffer-type (get-buffer-type java-type)]
-     (-> (read-raster-direct band xstart ystart xblock yblock xblock yblock gdal-type buffer)
-           buffer-type
-           nio/buffer-to-array
-           vec)))
+       {:x x :y y :data (reader x y)})))
 
 (defn write-block-direct
   "Write a block of image data efficiently"
