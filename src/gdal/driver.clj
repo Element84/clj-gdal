@@ -1,5 +1,4 @@
-(ns clj-gdal.driver)
-
+(ns gdal.driver)
 
 (defn register
   "Register a driver for use"

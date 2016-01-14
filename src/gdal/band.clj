@@ -1,13 +1,11 @@
-(ns clj-gdal.band
+(ns gdal.band
   (:require [nio.core :as nio])
   (:import [java.nio ByteBuffer]
            [org.gdal.gdalconst gdalconst]))
 
-
-(defn checksum
+(defn get-checksum [band]
   "Compute checksum for whole image"
-  ([band] nil)
-  ([band xoff yoff xsize ysize] nil))
+  (.Checksum band))
 
 (defn compute-band-stats
   "Compute mean and standard deviation values"
@@ -67,11 +65,12 @@
 (defn get-category-names
   "Fetch the list of category names for this raster"
   [band]
-  nil)
+  (.GetCategoryNames band))
 
 (defn set-category-names
   "Set the category names for this band"
-  [band names])
+  [band names]
+  (.GetCategoryNames band names))
 
 ; shall we use a symbol instead of an int constant??
 (defn get-color-interpretation
@@ -83,12 +82,12 @@
 (defn set-color-interpretation
   "Set color interpretation of band"
   [band interpretation]
-  nil)
+  (.SetColorInterpretation band interpretation))
 
 (defn get-color-table
   "Fetch the color table associated with band"
   [band]
-  `(.GetColorTable band))
+  (.GetColorTable band))
 
 (defn set-color-table
   "Set color table associated with band"
@@ -105,7 +104,7 @@
   [band]
   (.getDataType band))
 
-(def java_type->gdal_type
+(def java-type->gdal-type
   {java.lang.Byte     gdalconst/GDT_Byte
    java.lang.Short    gdalconst/GDT_Int16
    java.lang.Integer  gdalconst/GDT_Int32
@@ -113,21 +112,21 @@
 
 (defn get-gdal-type
   "Get the GDAL type needed to convert rasters to a Java type"
-  [java-type] (java_type->gdal_type java-type))
+  [java-type] (java-type->gdal-type java-type))
 
-(def gdal_type->java_type
+(def gdal-type->java-type
   {gdalconst/GDT_Byte     java.lang.Byte
-   gdalconst/GDT_Int16    java.lang.Short    
-   gdalconst/GDT_Int32    java.lang.Integer  
+   gdalconst/GDT_Int16    java.lang.Short
+   gdalconst/GDT_Int32    java.lang.Integer
    gdalconst/GDT_Float32  java.lang.Float})
 
 (defn get-java-type
   "Get the best Java type for the given GDAL band"
   [band]
   (let [gdal-type (get-data-type band)]
-    (gdal_type->java_type gdal-type)))
+    (gdal-type->java-type gdal-type)))
 
-(def java_type->buffer_type
+(def java-type->buffer-type
   {java.lang.Byte     nio/byte-buffer
    java.lang.Short    nio/short-buffer
    java.lang.Integer  nio/int-buffer
@@ -135,14 +134,14 @@
 
 (defn get-buffer-type
   "Get the nio buffer converter for the Java type"
-  [java-type] (java_type->buffer_type java-type))
+  [java-type] (java-type->buffer-type java-type))
 
 (defn get-data-type-size
   "Number of bytes per pixel"
   [band]
-  (let [gdal_type (get-data-type band)
-        byte_size (get-in gdal_type->java_type [gdal_type :size])]
-    (/ byte_size 8)))
+  (let [gdal-type (get-data-type band)
+        byte-size (get-in gdal-type->java-type [gdal-type :size])]
+    (/ byte-size 8)))
 
 ; unsigned integers are too big for the signed java types...
 ; but they require special handling to make fit.
@@ -189,8 +188,7 @@
   "Fetch maximum value for band"
   [band]
   (let [result (make-array java.lang.Double 1)
-        become short
-        safely #(cond % (become %))]
+        safely #(cond % (short %))]
     (.GetMaximum band result)
     (-> result first safely)))
 
@@ -198,8 +196,7 @@
   "Fetch minimum value for band"
   [band]
   (let [result (make-array java.lang.Double 1)
-        become short
-        safely #(cond % (become %))]
+        safely #(cond % (short %))]
     (.GetMinimum band result)
     (-> result first safely)))
 
@@ -207,8 +204,7 @@
   "Fetch the no data value for this band"
   [band]
   (let [result (make-array java.lang.Double 1)
-        become short
-        safely #(cond % (become %))]
+        safely #(cond % (short %))]
     (.GetNoDataValue band result)
     (-> result first safely)))
 
@@ -336,3 +332,6 @@
   "Write a region of image data for this band"
   [band xoff yoff xsize ysize data]
   nil)
+
+;;; Aliases
+(def checksum #'get-checksum)

@@ -1,4 +1,4 @@
-(ns clj-gdal.core
+(ns gdal.core
   (:import [org.gdal.gdal gdal]))
 
 (defn init
