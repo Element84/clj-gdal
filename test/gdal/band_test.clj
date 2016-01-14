@@ -59,8 +59,8 @@
                      (band/get-band)))))
       (testing "Get mask flags (0x08 / GMF_NODATA)"
         (is (= 8 (band/get-mask-flags band))))
-      (testing "Get dataset"
-        (not (= nil (band/get-dataset band))))
+      ;;(testing "Get dataset"
+      ;;  (not (= nil (band/get-dataset band))))
       (testing "Get no-data value"
         (is (= -9999 (band/get-no-data-value band))))
       (testing "Get minimum (which geotiffs don't know)"
@@ -84,6 +84,6 @@
         (let [blocks (band/raster-seq band :xstep 100 :ystep 50)]
           (is (= 200 (count blocks))))))
     (testing "Raster sequence of byte buffer"
-      (let [blocks (raster-seq band :xstep 500 :ystep 500)]
+      (let [blocks (band/raster-seq band :xstep 500 :ystep 500)]
         (is (= 4 (count blocks)))
         (is (every? #(= (type (:data %)) java.nio.DirectByteBuffer) blocks))))))
