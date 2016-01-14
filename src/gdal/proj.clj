@@ -4,6 +4,10 @@
 ;;;; the projection data (using the Apache Spatial Information System
 ;;;; library).
 ;;;;
+;;;; Note that this is for standard formats of WKT as found in Landsat 8 image
+;;;; metadata. It is not meant to parse custom WKT with unsupported or
+;;;; non-standard fields
+;;;;
 (ns gdal.proj
   (:require [gdal.util :refer :all])
   (:import [org.gdal.gdal Dataset]
