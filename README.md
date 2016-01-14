@@ -49,7 +49,7 @@ compiled on your system, as it references libraries which GDAL builds.
 
 Add clj-gdal a dependency to your lein project:
 
-[![Clojars Project](http://clojars.org/oubiwann/clj-gdal/latest-version.svg)](http://clojars.org/oubiwann/clj-gdal)
+[![Clojars Project](http://clojars.org/e84/clj-gdal/latest-version.svg)](http://clojars.org/e84/clj-gdal)
 
 Then start up the Clojure REPL:
 
