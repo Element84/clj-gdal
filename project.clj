@@ -1,6 +1,6 @@
 (defproject e84/clj-gdal "0.3.1"
   :description "Clojure-idiomatic GDAL wrapper"
-  :url "http://github.com/element84/clj-gdal"
+  :url "http://github.com/Element84/clj-gdal"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :repositories [["geotoolkit" "http://maven.geotoolkit.org/"]]
