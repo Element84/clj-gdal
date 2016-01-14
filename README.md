@@ -26,15 +26,6 @@ HDR, NetCDF, GeoTIFF, etc.
 The clj-gdal project offers a Clojure wrapper around parts of the Java GDAL
 library.
 
-This version of the library was forked from the Element84 repo, here:
-
-* https://github.com/Element84/clj-gdal
-
-Key differences include:
-
-* Support for UbuntuGIS versions of GDAL (1.x)
-* Removal of ``clj-`` from namespace
-
 
 ## Dependencies [&#x219F;](#contents)
 
