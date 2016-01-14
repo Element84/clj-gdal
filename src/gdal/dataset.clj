@@ -3,7 +3,12 @@
            [org.gdal.gdalconst gdalconst]
            [java.nio ByteBuffer]
            [java.text ParsePosition]
-           [org.apache.sis.io.wkt WKTFormat])
+           ;; XXX note that Apache SIS doesn't yet support Albers Equal Area
+           ;;  * https://issues.apache.org/jira/browse/SIS-232
+           ;; when this is supported, we can re-enable Apache SIS
+           ;;[org.apache.sis.io.wkt WKTFormat]
+           [org.geotoolkit.io.wkt WKTFormat]
+           [org.opengis.referencing.crs CoordinateReferenceSystem])
   (:refer-clojure :exclude [read]))
 
 (defn get-geo-transform
@@ -29,9 +34,14 @@
   "Get a parsed WKT object for the dataset's projection definition"
   [dataset & {:keys [locale timezone start-index]
               :or {locale nil timezone nil start-index 0}}]
-  (let [wkt (new WKTFormat locale timezone)
-        parse-index (new ParsePosition start-index)]
-    (.parse wkt (get-projection-str dataset) parse-index)))
+  ;; XXX This is for Apache SIS
+  ;; (let [wkt (new WKTFormat locale timezone)
+  ;;       parse-index (new ParsePosition start-index)]
+  ;;   (.parse wkt (get-projection-str dataset) parse-index))
+  (let [wkt (new WKTFormat)
+        parse-index 0]
+    (.parse wkt (get-projection-str dataset) parse-index CoordinateReferenceSystem))
+  )
 
 (defn get-band-count
   "Get the number of raster bands in the dataset"

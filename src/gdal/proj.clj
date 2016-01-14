@@ -1,4 +1,4 @@
-;;;; This namespace projides wrappers for getting projection information
+;;;; This namespace provides wrappers for getting projection information
 ;;;; returned by GDAL. Since GDAL only gives this information as text (WKT
 ;;;; format), this namespace provides wrappers for object-access to
 ;;;; the projection data (using the Apache Spatial Information System
@@ -10,7 +10,11 @@
            [org.gdal.gdalconst gdalconst]
            [java.nio ByteBuffer]
            [java.text ParsePosition]
-           [org.apache.sis.io.wkt WKTFormat]))
+           ;; XXX note that Apache SIS doesn't yet support Albers Equal Area
+           ;;  * https://issues.apache.org/jira/browse/SIS-232
+           ;; when this is supported, we can re-enable Apache SIS
+           ;;[org.apache.sis.io.wkt WKTFormat]
+           [org.geotoolkit.io.wkt WKTFormat]))
 
 ;;; Top-level
 
