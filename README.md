@@ -40,7 +40,7 @@ compiled on your system, as it references libraries which GDAL builds.
 
 Add clj-gdal a dependency to your lein project:
 
-[![Clojars Project](http://clojars.org/oubiwann/clj-gdal/latest-version.svg)](http://clojars.org/oubiwann/clj-gdal)
+[![Clojars Project](http://clojars.org/e84/clj-gdal/latest-version.svg)](http://clojars.org/e84/clj-gdal)
 
 Then start up the Clojure REPL:
 
@@ -144,7 +144,7 @@ gdal.dev=> (proj/get-axis-unit proj-data 1)
 
 ## License [&#x219F;](#contents)
 
-Copyright © 2015 Jonathan Morton, Duncan McGreggor
+Copyright © 2015-2016 Jonathan Morton, Duncan McGreggor
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
