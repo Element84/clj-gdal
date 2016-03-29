@@ -6,10 +6,15 @@
   []
   (gdal/AllRegister))
 
-(defn open
-  "Open a raster file as a Dataset object"
-  [path]
+(defmulti open class)
+
+(defmethod open java.lang.String [path]
+  (println "opening string")
   (gdal/Open path))
+
+(defmethod open java.io.File [file]
+  (println "opening file")
+  (gdal/Open (.getAbsolutePath file)))
 
 (defn close
   "Frees native resources associated to dataset, closes file."
@@ -18,12 +23,12 @@
 
 (defmacro with-dataset
   [[binding path] & body]
-  `(let [dataset# (gdal.core/open ~path)
+  `(let [dataset# (open ~path)
          ~binding dataset#]
       (try
         (do ~@body)
         (finally
-          (.delete dataset#)))))
+          (close dataset#)))))
 
 (defn version-info
   "Get information about the current version of GDAL"
