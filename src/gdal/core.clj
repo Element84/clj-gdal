@@ -11,6 +11,20 @@
   [path]
   (gdal/Open path))
 
+(defn close
+  "Frees native resources associated to dataset, closes file."
+  [dataset]
+  (.delete dataset))
+
+(defmacro with-dataset
+  [[binding path] & body]
+  `(let [dataset# (gdal.core/open ~path)
+         ~binding dataset#]
+      (try
+        (do ~@body)
+        (finally
+          (.delete dataset#)))))
+
 (defn version-info
   "Get information about the current version of GDAL"
   [& request]
