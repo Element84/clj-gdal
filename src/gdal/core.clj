@@ -9,11 +9,9 @@
 (defmulti open class)
 
 (defmethod open java.lang.String [path]
-  (println "opening string")
   (gdal/Open path))
 
 (defmethod open java.io.File [file]
-  (println "opening file")
   (gdal/Open (.getAbsolutePath file)))
 
 (defn close
