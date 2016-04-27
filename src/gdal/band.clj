@@ -280,6 +280,11 @@
   [band]
   (.GetYSize band))
 
+(defn get-size
+  "Fetch number of pixels along x and y axis"
+  [band]
+  [(get-x-size band) (get-y-size band)])
+
 (defn has-arbitrary-overviews
   "Check for arbitrary overviews"
   [band]
