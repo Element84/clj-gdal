@@ -1,3 +1,19 @@
+(def centos-lib-paths
+  ["/usr/java/packages/lib/amd64"
+   "/usr/lib64"
+   "/lib64"
+   "/lib"
+   "/usr/lib"])
+
+(def gdal-paths
+  ["/usr/lib/java/gdal"])
+
+(defn get-lib-path []
+  (->> gdal-paths
+       (into centos-lib-paths)
+       (clojure.string/join ":")
+       (str "-Djava.library.path=")))
+
 (defproject element84/clj-gdal "0.3.3"
   :description "Clojure-idiomatic GDAL wrapper"
   :url "http://github.com/Element84/clj-gdal"
@@ -10,4 +26,7 @@
                  [org.gdal/gdal "1.11.2"]
                  [org.apache.sis.core/sis-referencing "0.6"]
                  [nio "1.0.3"]]
-  :repl-options {:init-ns gdal.dev})
+  :repl-options {:init-ns gdal.dev}
+  :profiles {
+    :dev {
+      :jvm-opts [~(get-lib-path)]}})
