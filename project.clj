@@ -5,12 +5,21 @@
    "/lib"
    "/usr/lib"])
 
+(def ubuntu-lib-paths
+  ["/usr/java/packages/lib/amd64"
+   "/usr/lib/x86_64-linux-gnu/jni"
+   "/lib/x86_64-linux-gnu"
+   "/usr/lib/x86_64-linux-gnu"
+   "/usr/lib/jni"
+   "/lib:/usr/lib"])
+
 (def gdal-paths
   ["/usr/lib/java/gdal"])
 
 (defn get-lib-path []
   (->> gdal-paths
        (into centos-lib-paths)
+       (into ubuntu-lib-paths)
        (clojure.string/join ":")
        (str "-Djava.library.path=")))
 
