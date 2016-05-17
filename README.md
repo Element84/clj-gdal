@@ -30,7 +30,7 @@ library.
 ## Dependencies [&#x219F;](#contents)
 
 * Java 1.7 or higher (uses java.nio via the nio Clojure wrapper)
-* Java GDAL 2.0.0 library (included)
+* Java GDAL 1.11 library (included)
 
 The Java library downloaded from Maven still requires that you have GDAL 2.x
 compiled on your system, as it references libraries which GDAL builds.
