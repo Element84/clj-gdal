@@ -23,7 +23,7 @@
        (clojure.string/join ":")
        (str "-Djava.library.path=")))
 
-(defproject element84/clj-gdal "0.3.3"
+(defproject element84/clj-gdal "0.3.4"
   :description "Clojure-idiomatic GDAL wrapper"
   :url "http://github.com/Element84/clj-gdal"
   :license {:name "Eclipse Public License"
