@@ -1,5 +1,24 @@
 (ns gdal.core
+  (:require [clojure.string :refer [split join]])
   (:import [org.gdal.gdal gdal]))
+
+;; Ensure the Java library path includes common
+;; install locations.
+
+(defn append-gdal-lib-paths!
+  ""
+  [& paths]
+  (let [prop "java.library.path"
+        orig (split (System/getProperty prop) #":")
+        more (join ":" (distinct (concat orig paths)))]
+    (System/setProperty prop more)
+    more))
+
+(def gdal-paths
+  ;; CentOS yum install location
+  ["/usr/lib/java/gdal"])
+
+(apply append-gdal-lib-paths! gdal-paths)
 
 (defn init
   "Load all available GDAL drivers"
