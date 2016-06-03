@@ -1,24 +1,34 @@
 (ns gdal.core
-  (:require [clojure.string :refer [split join]])
-  (:import [org.gdal.gdal gdal]))
+  (:require [clojure.string :refer [split join]]))
 
-;; Ensure the Java library path includes common
-;; install locations.
-
-(defn append-gdal-lib-paths!
-  ""
+(defn add-usr-path
   [& paths]
-  (let [prop "java.library.path"
-        orig (split (System/getProperty prop) #":")
-        more (join ":" (distinct (concat orig paths)))]
-    (System/setProperty prop more)
-    more))
+  (let [field (.getDeclaredField ClassLoader "usr_paths")]
+    (try (.setAccessible field true)
+         (let [original (vec (.get field nil))
+               updated  (distinct (concat original paths))]
+           (.set field nil (into-array updated)))
+         (finally
+           (.setAccessible field false)))))
+
+(defn get-usr-path
+  [& paths]
+  (let [field (.getDeclaredField ClassLoader "usr_paths")]
+    (try (.setAccessible field true)
+         (vec (.get field nil))
+         (finally
+           (.setAccessible field false)))))
+
 
 (def gdal-paths
-  ;; CentOS yum install location
-  ["/usr/lib/java/gdal"])
+  [;; CentOS yum install location
+   "/usr/lib/java/gdal"
+   ;; Ubuntu install location
+   "/usr/lib/jni"])
 
-(apply append-gdal-lib-paths! gdal-paths)
+;; The gdal paths must be added before importing the classes!
+(apply add-usr-path gdal-paths)
+(import org.gdal.gdal.gdal)
 
 (defn init
   "Load all available GDAL drivers"

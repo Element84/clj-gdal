@@ -1,4 +1,5 @@
-(ns gdal.driver)
+(ns gdal.driver
+  (:require [gdal.core]))
 
 (defn register
   "Register a driver for use"
