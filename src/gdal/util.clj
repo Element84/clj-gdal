@@ -1,4 +1,5 @@
-(ns gdal.util)
+(ns gdal.util
+  (:require [gdal.core]))
 
 (defn obj->str
   ([obj]

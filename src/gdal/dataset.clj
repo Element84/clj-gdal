@@ -1,4 +1,5 @@
 (ns gdal.dataset
+  (:require [gdal.core])
   (:import [org.gdal.gdal Dataset]
            [org.gdal.gdalconst gdalconst]
            [java.nio ByteBuffer]

@@ -1,5 +1,6 @@
 (ns gdal.band
-  (:require [nio.core :as nio])
+  (:require [gdal.core]
+            [nio.core :as nio])
   (:import [java.nio ByteBuffer]
            [org.gdal.gdalconst gdalconst]))
 

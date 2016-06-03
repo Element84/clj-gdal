@@ -3,11 +3,12 @@
             [clojure.reflect :as reflect]
             [clojure.tools.logging :as log]
             [clojure.tools.namespace.repl :as repl]
-            [gdal.core :as gdal]
             [gdal.band :as band]
             [gdal.dataset :as dataset]
             [gdal.proj :as proj]
-            [gdal.util :refer :all])
+            [gdal.util :refer :all]
+            [gdal.core :as gdal]
+            )
   (:import [java.nio ByteBuffer]
            [org.gdal.gdalconst gdalconst]))
 

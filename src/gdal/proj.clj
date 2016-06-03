@@ -9,7 +9,8 @@
 ;;;; non-standard fields
 ;;;;
 (ns gdal.proj
-  (:require [gdal.util :refer :all])
+  (:require [gdal.core]
+            [gdal.util :refer :all])
   (:import [org.gdal.gdal Dataset]
            [org.gdal.gdalconst gdalconst]
            [java.nio ByteBuffer]

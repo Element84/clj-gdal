@@ -1,8 +1,8 @@
 (ns gdal.proj-test
   (:require [clojure.test :refer :all]
             [nio.core :as nio]
-            [gdal.band :as band]
             [gdal.core :as gdal]
+            [gdal.band :as band]
             [gdal.dataset :as dataset]
             [gdal.proj :as proj])
   (:import [org.gdal.gdalconst gdalconst]))

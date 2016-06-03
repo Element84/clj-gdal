@@ -1,8 +1,8 @@
 (ns gdal.band-test
   (:require [clojure.test :refer :all]
             [nio.core :as nio]
-            [gdal.band :as band]
             [gdal.core :as gdal]
+            [gdal.band :as band]
             [gdal.dataset :as dataset])
   (:import [org.gdal.gdalconst gdalconst]))
 
@@ -119,4 +119,3 @@
     (let [blocks (band/raster-seq *band* :xstep 500 :ystep 500)]
       (is (= 4 (count blocks)))
       (is (every? #(= (type (:data %)) java.nio.DirectByteBuffer) blocks)))))
-
