@@ -206,7 +206,7 @@
 ;;; Aliases
 
 (def get-proj #'get-projection)
-(def count-bands #'get-band-count)
+(def count-bands #'get-raster-count)
 (def count-gcps #'get-gcp-count)
 (def read #'read-raster)
 
