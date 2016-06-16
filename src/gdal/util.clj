@@ -1,5 +1,4 @@
 (ns gdal.util
-  (:require [gdal.core])
   (:import [org.gdal.gdalconst gdalconst]
            [java.nio ByteBuffer ShortBuffer IntBuffer FloatBuffer DoubleBuffer HeapByteBuffer DirectByteBuffer]))
 

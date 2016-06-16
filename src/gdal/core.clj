@@ -1,34 +1,21 @@
 (ns gdal.core
-  (:require [clojure.string :refer [split join]]))
+  (:require [clojure.string :refer [split join]]
+            [gdal.libpath]))
 
-(defn add-usr-path
-  [& paths]
-  (let [field (.getDeclaredField ClassLoader "usr_paths")]
-    (try (.setAccessible field true)
-         (let [original (vec (.get field nil))
-               updated  (distinct (concat original paths))]
-           (.set field nil (into-array updated)))
-         (finally
-           (.setAccessible field false)))))
-
-(defn get-usr-path
-  [& paths]
-  (let [field (.getDeclaredField ClassLoader "usr_paths")]
-    (try (.setAccessible field true)
-         (vec (.get field nil))
-         (finally
-           (.setAccessible field false)))))
-
-
-(def gdal-paths
-  [;; CentOS yum install location
-   "/usr/lib/java/gdal"
-   ;; Ubuntu install location
-   "/usr/lib/jni"])
-
-;; The gdal paths must be added before importing the classes!
-(apply add-usr-path gdal-paths)
-(import org.gdal.gdal.gdal)
+;; This reduces the amount of configuration required
+;; by developers by addin directories to the load path
+;; that contain the GDAL JNI libraries. Without this,
+;; one would likely need to set LD_LIBRARY_PATH when
+;; invoking something that uses clj-gdal (yikes).
+(try
+  (gdal.libpath/amend)
+  (catch RuntimeException e
+    (binding [*out* *err*]
+      (println (str "Could not update paths to native libraries. "
+                    "You may need to set LD_LIBRARY_PATH to the "
+                    "directory containing libgdaljni.so"))))
+  (finally
+      (import org.gdal.gdal.gdal)))
 
 (defn init
   "Load all available GDAL drivers"
