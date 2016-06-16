@@ -29,7 +29,7 @@
 
 ;;; Fixture to to wrap each test in the namespace, called for every test
 
-(def test-data-path "test/data/espa/landsat_8_sr_band_4_san_francisco.tif")
+(def test-data-path "test/data/sample.tif")
 (def ^:dynamic *band*)
 
 (defn setup-each [test-fn]
