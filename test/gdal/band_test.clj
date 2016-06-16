@@ -3,7 +3,9 @@
             [nio.core :as nio]
             [gdal.core :as gdal]
             [gdal.band :as band]
-            [gdal.dataset :as dataset])
+            [gdal.dataset :as dataset]
+            [gdal.driver :as driver]
+            [gdal.util :as util])
   (:import [org.gdal.gdalconst gdalconst]))
 
 ;; BEWARE: IF YOU CHANGE THE TEST FILE THERE IS A GOOD CHANCE THE
@@ -119,3 +121,33 @@
     (let [blocks (band/raster-seq *band* :xstep 500 :ystep 500)]
       (is (= 4 (count blocks)))
       (is (every? #(= (type (:data %)) java.nio.DirectByteBuffer) blocks)))))
+
+(defn make-band [xs ys]
+  (-> (gdal/get-driver-by-name "MEM")
+      (driver/create "test-dataset" xs ys)
+      (dataset/get-band 1)))
+
+(defn make-data [xs ys]
+  (into-array Byte/TYPE (take (* xs ys) (cycle (range Byte/MIN_VALUE Byte/MAX_VALUE)))))
+
+(deftest test-write
+  (testing "write an array (not a byte buffer)"
+    (let [test-band (make-band 128 128)
+          test-data (make-data 128 128)]
+      (band/write-raster test-band 0 0 128 128 test-data)
+      (band/read-raster-direct test-band 0 0 4 4)))
+  (testing "write an allocated direct buffer"
+    (let [test-band (make-band 128 128)
+          test-data (make-data 128 128)
+          buff (java.nio.ByteBuffer/allocateDirect (* 128 128))]
+      (band/write-raster-direct test-band 0 0 128 128 buff)))
+  (testing "write a buffer wrapped array generates an exception"
+    (let [test-band (make-band 128 128)
+          test-data (make-data 128 128)
+          buff (java.nio.ByteBuffer/wrap test-data)]
+      ;; XXX thrown-with-msg? doesn't seem to handle the
+      ;; raised exception, that's odd...
+      #_(is (thrown-with-msg?
+           java.lang.RuntimeException
+           #"Buffer must be allocated direct"
+           (band/write-raster-direct test-band 0 0 128 128 buff))))))

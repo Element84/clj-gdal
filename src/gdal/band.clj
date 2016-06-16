@@ -1,5 +1,6 @@
 (ns gdal.band
   (:require [gdal.core]
+            [gdal.util]
             [nio.core :as nio])
   (:import [java.nio ByteBuffer]
            [org.gdal.gdalconst gdalconst]))
@@ -330,14 +331,18 @@
   nil)
 
 (defn write-raster-direct
-  "Write a region of image data for this band"
-  [band xoff yoff xsize ysize buffer-gdal-type buffer]
-  nil)
+  "Write a region of image data for this band. Buffer must be a direct allocated byte buffer."
+  [band xoff yoff xsize ysize buffer]
+  (let [gdal-type (gdal.util/type-map buffer)]
+    (.WriteRaster_Direct band xoff yoff xsize ysize buffer)))
 
 (defn write-raster
   "Write a region of image data for this band"
   [band xoff yoff xsize ysize data]
-  nil)
+  ;; use a function to map java array type to
+  ;; underlying gdal type...
+  (let [gdal-type (gdal.util/array->gdal-type data)]
+    (.WriteRaster band xoff yoff xsize ysize gdal-type data)))
 
 ;;; Aliases
 (def checksum #'get-checksum)

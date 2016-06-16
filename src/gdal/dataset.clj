@@ -7,6 +7,13 @@
            [org.apache.sis.io.wkt WKTFormat])
   (:refer-clojure :exclude [read]))
 
+(defn add-band
+  ""
+  ([dataset]
+   (.AddBand dataset))
+  ([dataset index]
+   (.AddBand dataset index)))
+
 (defn get-geo-transform
   "Get the affine transformation coefficients of the dataset.
 
@@ -76,6 +83,16 @@
   "Read a region of image data from multiple bands"
   [dataset xoff yoff xsize ysize & bands]
   nil)
+
+(defn set-geo-transform
+  ""
+  [dataset affine]
+  (.SetGeoTransform dataset (into-array Double/TYPE affine)))
+
+(defn set-projection-str
+  ""
+  [dataset wkt]
+  (.SetProjection dataset wkt))
 
 ;;; Aliases
 

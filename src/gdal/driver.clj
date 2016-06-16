@@ -1,5 +1,6 @@
 (ns gdal.driver
-  (:require [gdal.core]))
+  (:require [gdal.core])
+  (:import [org.gdal.gdal Driver]))
 
 (defn register
   "Register a driver for use"
@@ -30,8 +31,8 @@
 
 (defn create
   "Create a new dataset"
-  [name xsize ysize]
-  nil)
+  [driver name xsize ysize]
+  (.Create driver name xsize ysize))
 
 (defn create-copy
   "Create a copy of a dataset"
