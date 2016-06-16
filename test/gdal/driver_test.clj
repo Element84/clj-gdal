@@ -11,7 +11,7 @@
 
 (deftest register-test
   (testing "register a driver"
-    (comment "I don't know how to test this..."))
+    (comment "I don't know how to test this...")))
 
 (deftest deregister-test
   (testing "deregister a driver"
