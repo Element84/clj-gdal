@@ -35,3 +35,8 @@
       (.getClass)
       (.getComponentType)
       type-map))
+
+(defn not-yet
+  ""
+  []
+  (throw (UnsupportedOperationException. "this function is not yet supported")))
