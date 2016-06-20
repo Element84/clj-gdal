@@ -1,5 +1,6 @@
 (ns gdal.dataset
-  (:require [gdal.core])
+  (:require [gdal.core]
+            [gdal.util])
   (:import [org.gdal.gdal Dataset]
            [org.gdal.gdalconst gdalconst]
            [java.nio ByteBuffer]
@@ -38,7 +39,7 @@
 (defn delete
   ""
   [dataset]
-  (gdal.util/not-yet))
+  (.delete dataset))
 
 (defn create-mask-band
   ""
@@ -56,19 +57,19 @@
   (gdal.util/not-yet))
 
 (defn flush-cache
-  ""
+  "Write dataset to file"
   [dataset]
-  (gdal.util/not-yet))
+  (.FlushCache dataset))
 
 (defn get-driver
   ""
   [dataset]
-  (gdal.util/not-yet))
+  (.GetDriver dataset))
 
 (defn get-file-list
   ""
   [dataset]
-  (gdal.util/not-yet))
+  (.GetFileList dataset))
 
 (defn get-gcp-count
   "Get number of GCPs"

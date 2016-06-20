@@ -31,7 +31,7 @@
 
 (defn fill
   "Fill band with a constant value"
-  ([band real-fill & opts] (gdal.util/not-yet)))
+  ([band real-fill & opts] (.Fill band real-fill)))
 
 (defn flush-cache
   "Flush raster data cache"
@@ -366,7 +366,5 @@
 (defn write-raster
   "Write a region of image data for this band"
   [band xoff yoff xsize ysize data]
-  ;; use a function to map java array type to
-  ;; underlying gdal type...
   (let [gdal-type (gdal.util/array->gdal-type data)]
     (.WriteRaster band xoff yoff xsize ysize gdal-type data)))
