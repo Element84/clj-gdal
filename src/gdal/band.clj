@@ -330,17 +330,17 @@
 (defn set-no-data-value
   "Set the no data value for this band"
   [band no-data]
-  (gdal.util/not-yet))
+  (.SetNoDataValue band no-data))
 
 (defn set-offset
   "Set scaling offset"
   [band offset]
-  (gdal.util/not-yet))
+  (.SetOffset band offset))
 
 (defn set-scale
   "Set scaling ratio"
   [band scale]
-  (gdal.util/not-yet))
+  (.SetScale band scale))
 
 (defn set-statistics
   "Set statistics on band"
@@ -350,7 +350,7 @@
 (defn set-unit-type
   "Set unit type"
   [band unit-type]
-  (gdal.util/not-yet))
+  (.SetUnitType band unit-type))
 
 (defn write-block-direct
   "Write a block of image data efficiently"
