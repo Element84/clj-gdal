@@ -23,7 +23,7 @@
 
 ;;; Fixture to to wrap each test in the namespace, called for every test
 
-(def test-data-path "test/data/l8/LC80290302015263LGN00_B2.TIF")
+(def test-data-path "test/data/sample.tif")
 (def ^:dynamic *proj*)
 
 (defn setup-each [test-fn]
