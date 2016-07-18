@@ -24,7 +24,6 @@
 (deftest test-open
   (testing "Opening a geotiff"
     (let [_ (gdal/init) ; fixture?
-          path "test/data/espa/landsat_8_sr_band_4_san_francisco.tif"
+          path "test/data/sample.tif"
           tiff (gdal/open path)]
       (not (= tiff nil)))))
-

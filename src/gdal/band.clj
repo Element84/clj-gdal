@@ -1,44 +1,42 @@
 (ns gdal.band
   (:require [gdal.core]
+            [gdal.util]
             [nio.core :as nio])
   (:import [java.nio ByteBuffer]
            [org.gdal.gdalconst gdalconst]))
 
-(defn get-checksum [band]
+(defn checksum
   "Compute checksum for whole image"
-  (.Checksum band))
+  ([band] (.Checksum band))
+  ([band x y xs ys] (.Checksum band x y xs ys)))
 
 (defn compute-band-stats
   "Compute mean and standard deviation values"
-  ([band] nil)
-  ([band samplestep] nil))
+  ([band] (gdal.util/not-yet))
+  ([band samplestep] (gdal.util/not-yet)))
 
 (defn compute-raster-min-max
   "Compute min/max values for a band"
-  ([band] nil)
-  ([band approx-ok] nil))
+  ([band] (gdal.util/not-yet))
+  ([band approx-ok] (gdal.util/not-yet)))
 
 (defn compute-statistics
   "Compute image statistics"
-  ([band approx-ok] nil)
-  ([band approx-ok min max] nil)
-  ([band approx-ok min max mean stddev] nil)
-  ([band approx-ok min max mean stddev callback]))
+  ([band approx-ok & opts] (gdal.util/not-yet)))
 
 (defn create-mask-band
   "Add a mask band to the current band"
   [band flags]
-  nil)
+  (gdal.util/not-yet))
 
 (defn fill
   "Fill band with a constant value"
-  ([band real-fill] nil)
-  ([band real-file imag-fill] nil))
+  ([band real-fill & opts] (.Fill band real-fill)))
 
 (defn flush-cache
   "Flush raster data cache"
   [band]
-  nil)
+  (.FlushCache band))
 
 (defn get-band
   "Fetch the band number"
@@ -68,11 +66,6 @@
   [band]
   (.GetCategoryNames band))
 
-(defn set-category-names
-  "Set the category names for this band"
-  [band names]
-  (.GetCategoryNames band names))
-
 ; shall we use a symbol instead of an int constant??
 (defn get-color-interpretation
   "How should this band be interpreted as color?"
@@ -80,20 +73,10 @@
   ; I wonder if a symbol ought to be returned.
   (.GetColorInterpretation band))
 
-(defn set-color-interpretation
-  "Set color interpretation of band"
-  [band interpretation]
-  (.SetColorInterpretation band interpretation))
-
 (defn get-color-table
   "Fetch the color table associated with band"
   [band]
   (.GetColorTable band))
-
-(defn set-color-table
-  "Set color table associated with band"
-  [band color-table]
-  nil)
 
 (defn get-dataset
   "Get the dataset to which the band belongs"
@@ -152,28 +135,19 @@
 ; explain what this does -- comment repeats function name
 (defn get-default-histogram
   "Fetch the default raster histogram"
-  ([band min max] nil)
-  ([band min max force] nil)
-  ([band min max force callback] nil))
-
-(defn set-default-histogram
-  "Set default histogram"
-  [band min max histogram]
-  nil)
+  ;; XXX handle overloaded functions with opts
+  ([band min max & opts] (gdal.util/not-yet)))
 
 (defn get-default-rat
   "Fetch the default raster attribute table"
   [band]
   (.GetDefaultRAT band))
 
-(defn set-default-rat
-  "Set raster color table"
-  [band table])
-
 (defn get-histogram
   "Compute raster histogram"
-  [band min max]
-  nil)
+  ;; XXX handle overloaded functions with opts
+  [band & opts]
+  (.GetHistogram band))
 
 (defn get-mask-band
   "Return the mask band associated with band"
@@ -209,62 +183,61 @@
     (.GetNoDataValue band result)
     (-> result first safely)))
 
-(defn set-no-data-value
-  "Set the no data value for this band"
-  [band no-data]
-  nil)
-
 (defn get-offset
   "Fetch the raster value offset"
-  [band]
-  nil)
-
-(defn set-offset
-  "Set scaling offset"
-  [band offset]
-  nil)
+  [band i]
+  (let [result (make-array java.lang.Double 1)
+        safely #(cond % (short %))]
+    (.GetOffset band result)
+    (-> result first safely)))
 
 (defn get-overview
   "Fetch overview raster band"
   [band index]
-  nil)
+  (.GetOverview index))
 
 (defn get-overview-count
   "Number of overview layers available"
   [band]
-  nil)
+  (.GetOverviewCount band))
 
-; get-raster-* and set-raster-* functions, are they redundant?
+(defn get-raster-category-names
+  ""
+  [band]
+  (.GetRasterCategoryNames band))
+
+(defn get-raster-color-interpretation
+  ""
+  [band]
+  (.GetRasterColorInterpretation band))
+
+(defn get-raster-color-table
+  ""
+  [band]
+  (.GetRasterColorTable band))
+
+(defn get-raster-data-type
+  ""
+  [band]
+  (.GetRasterDataType band))
 
 (defn get-scale
   "Fetch the raster value scale"
   [band]
-  nil)
-
-(defn set-scale
-  "Set scaling ratio"
-  [band scale]
-  nil)
+  (let [result (make-array java.lang.Double 1)
+        safely #(cond % (short %))]
+    (.GetScale band result)
+    (-> result first safely)))
 
 (defn get-statistics
   "Fetch image statistics"
   [band approx-ok force]
-  nil)
-
-(defn set-statistics
-  "Set statistics on band"
-  [band min max mean stddev]
-  nil)
+  (gdal.util/not-yet))
 
 (defn get-unit-type
   "Fetch raster unit type"
   [band]
   (.GetUnitType band))
-
-(defn set-unit-type
-  "Set unit type"
-  [band unit-type]
-  nil)
 
 (defn get-byte-count
   "Count the number of bytes used by java-type"
@@ -294,8 +267,7 @@
 (defn read-block-direct
   "Read a block of image data efficiently"
   [band xoff yoff buffer]
-  (.ReadBlock_Direct band xoff yoff buffer)
-  buffer)
+  (.ReadBlock_Direct band xoff yoff buffer))
 
 (defn read-raster-direct
   "Read a region of image data"
@@ -324,20 +296,75 @@
            y (range xstart ystop ystep)]
        {:x x :y y :data (reader x y)})))
 
+(defn read-raster
+  ""
+  [band x y xs ys array & opts]
+  ;; XXX handle overloaded function calls with opts
+  (.ReadRaster band x y xs ys array))
+
+(defn set-category-names
+  "Set the category names for this band"
+  [band names]
+  (.GetCategoryNames band names))
+
+(defn set-color-interpretation
+  "Set color interpretation of band"
+  [band interpretation]
+  (.SetColorInterpretation band interpretation))
+
+(defn set-color-table
+  "Set color table associated with band"
+  [band color-table]
+  (gdal.util/not-yet))
+
+(defn set-default-histogram
+  "Set default histogram"
+  [band min max histogram]
+  (gdal.util/not-yet))
+
+(defn set-default-rat
+  "Set raster color table"
+  [band table]
+  (gdal.util/not-yet))
+
+(defn set-no-data-value
+  "Set the no data value for this band"
+  [band no-data]
+  (.SetNoDataValue band no-data))
+
+(defn set-offset
+  "Set scaling offset"
+  [band offset]
+  (.SetOffset band offset))
+
+(defn set-scale
+  "Set scaling ratio"
+  [band scale]
+  (.SetScale band scale))
+
+(defn set-statistics
+  "Set statistics on band"
+  [band min max mean stddev]
+  (gdal.util/not-yet))
+
+(defn set-unit-type
+  "Set unit type"
+  [band unit-type]
+  (.SetUnitType band unit-type))
+
 (defn write-block-direct
   "Write a block of image data efficiently"
   [band xoff yoff data]
-  nil)
+  (gdal.util/not-yet))
 
 (defn write-raster-direct
-  "Write a region of image data for this band"
-  [band xoff yoff xsize ysize buffer-gdal-type buffer]
-  nil)
+  "Write a region of image data for this band. Buffer must be a direct allocated byte buffer."
+  [band xoff yoff xsize ysize buffer]
+  (let [gdal-type (gdal.util/type-map buffer)]
+    (.WriteRaster_Direct band xoff yoff xsize ysize buffer)))
 
 (defn write-raster
   "Write a region of image data for this band"
   [band xoff yoff xsize ysize data]
-  nil)
-
-;;; Aliases
-(def checksum #'get-checksum)
+  (let [gdal-type (gdal.util/array->gdal-type data)]
+    (.WriteRaster band xoff yoff xsize ysize gdal-type data)))
