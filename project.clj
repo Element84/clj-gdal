@@ -1,4 +1,4 @@
-(defproject clj-gdal "0.4.0-SNAPSHOT"
+(defproject clj-gdal "0.4.0-ALPHA"
   :description "Clojure-idiomatic GDAL wrapper"
   :url "http://github.com/Element84/clj-gdal"
   :license {:name "Eclipse Public License"
